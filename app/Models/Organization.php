@@ -24,13 +24,18 @@ class Organization extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('name', 'like', '%'.$search.'%');
+            $query->where(function($where) use ($search) {
+                $where->where('name', 'like', '%'.$search.'%');
+                $where->orWhere('code', 'like', '%'.$search.'%');
+            });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
             }
+        })->when($filters['se_index'] ?? null, function ($query, $se_index) {
+            $query->where('se_index', $se_index);
         });
     }
 }

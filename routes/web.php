@@ -36,8 +36,8 @@ Route::delete('logout', [AuthenticatedSessionController::class, 'destroy'])
 // Dashboard
 
 Route::get('/', [DashboardController::class, 'index'])
-    ->name('dashboard')
-    ->middleware('auth');
+    ->name('dashboard');
+    // ->middleware('auth');
 
 // Users
 
@@ -72,8 +72,8 @@ Route::put('users/{user}/restore', [UsersController::class, 'restore'])
 // Organizations
 
 Route::get('organizations', [OrganizationsController::class, 'index'])
-    ->name('organizations')
-    ->middleware('auth');
+    ->name('organizations');
+    // ->middleware('guest');
 
 Route::get('organizations/create', [OrganizationsController::class, 'create'])
     ->name('organizations.create')
@@ -82,6 +82,10 @@ Route::get('organizations/create', [OrganizationsController::class, 'create'])
 Route::post('organizations', [OrganizationsController::class, 'store'])
     ->name('organizations.store')
     ->middleware('auth');
+
+Route::get('organizations/show/{code}', [OrganizationsController::class, 'show'])
+    ->name('organizations.show');
+    // ->middleware('guest');
 
 Route::get('organizations/{organization}/edit', [OrganizationsController::class, 'edit'])
     ->name('organizations.edit')
@@ -97,6 +101,10 @@ Route::delete('organizations/{organization}', [OrganizationsController::class, '
 
 Route::put('organizations/{organization}/restore', [OrganizationsController::class, 'restore'])
     ->name('organizations.restore')
+    ->middleware('auth');
+
+Route::get('organizations/sync', [OrganizationsController::class, 'sync'])
+    ->name('organizations.sync')
     ->middleware('auth');
 
 // Contacts
@@ -140,3 +148,13 @@ Route::get('reports', [ReportsController::class, 'index'])
 Route::get('/img/{path}', [ImagesController::class, 'show'])
     ->where('path', '.*')
     ->name('image');
+
+// Cache
+
+Route::get('/clear', function() {
+    $exitCode = Artisan::call('config:clear');
+    $exitCode = Artisan::call('cache:clear');
+    $exitCode = Artisan::call('config:cache');
+    $exitCode = Artisan::call('view:clear');
+    return 'Cache is cleared';
+});
