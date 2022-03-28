@@ -21,10 +21,11 @@ class OrganizationsController extends Controller
             $per_page = Request::get('per_page');
         }
         return Inertia::render('Organizations/Index', [
-            'filters' => Request::all('search', 'se_index', 'per_page'),
+            'filters' => Request::all('search', 'se_index', 'category', 'sector', 'per_page'),
+            'sectors' => Organization::groupBy('sector')->select('sector')->get(),
             'organizations' => Organization::where('account_id',1)
                 ->orderBy('code')
-                ->filter(Request::only('search', 'se_index'))
+                ->filter(Request::only('search', 'se_index', 'category', 'sector'))
                 ->select('id','code')
                 ->paginate($per_page)
                 ->withQueryString()
@@ -127,30 +128,61 @@ class OrganizationsController extends Controller
 
     public function sync()
     {
-        // DSEX
-        $ch = curl_init("https://www.dsebd.org/dseX_share.php");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        $content = curl_exec($ch);
-        curl_close($ch);
+        // // DSEX
+        // $ch = curl_init("https://www.dsebd.org/dseX_share.php");
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        // $content = curl_exec($ch);
+        // curl_close($ch);
 
-        $crawler = new Crawler(
-            (string) $content
-        );
-        $table = $crawler->filter('table.shares-table')->filter('tr')->each(function ($tr, $i) {
-            return $tr->filter('td')->each(function ($td, $i) {
-                return trim($td->text());
-            });
-        });
+        // $crawler = new Crawler(
+        //     (string) $content
+        // );
+        // $table = $crawler->filter('table.shares-table')->filter('tr')->each(function ($tr, $i) {
+        //     return $tr->filter('td')->each(function ($td, $i) {
+        //         return trim($td->text());
+        //     });
+        // });
         
-        foreach($table as $index => $tr){
-            if($index>0){
-                Organization::firstOrCreate(
-                    [
-                        'account_id' => 1,
-                        'code' => $tr[1]
-                    ]
-                );
+        // foreach($table as $index => $tr){
+        //     if($index>0){
+        //         Organization::firstOrCreate(
+        //             [
+        //                 'account_id' => 1,
+        //                 'code' => $tr[1]
+        //             ]
+        //         );
+        //     }
+        // }
+
+        // DSE By Category
+        $categories = ['A','B','G','N','Z'];
+        foreach($categories as $category){
+            $ch = curl_init("https://www.dsebd.org/latest_share_price_scroll_group.php?group=".$category);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+            $content = curl_exec($ch);
+            curl_close($ch);
+
+            $crawler = new Crawler(
+                (string) $content
+            );
+            $table = $crawler->filter('table.shares-table tr')->each(function ($tr, $i) {
+                return $tr->filter('td')->each(function ($td, $k) {
+                    return trim($td->text());
+                });
+            });
+            
+            foreach($table as $index => $tr){
+                if($index>0){
+                    Organization::firstOrCreate(
+                        [
+                            'account_id' => 1,
+                            'code' => $tr[1],
+                            'category' => $category
+                        ]
+                    );
+                }
             }
         }
 
@@ -181,6 +213,51 @@ class OrganizationsController extends Controller
                         'se_index' => 'DS30'
                     ]
                 );
+            }
+        }
+
+        // DSE By Sector
+        $ch = curl_init("https://www.dsebd.org/by_industrylisting.php");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $content = curl_exec($ch);
+        curl_close($ch);
+
+        $crawler = new Crawler(
+            (string) $content
+        );
+        $sectors = $crawler->filter('#RightBody table tr td.text-left a')->each(function ($a, $i) {
+            return [
+                'url' => $a->attr('href'),
+                'name' => trim($a->text())
+            ];
+        });
+        foreach($sectors as $sector){
+            $ch = curl_init("https://www.dsebd.org/".$sector['url']);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+            $content = curl_exec($ch);
+            curl_close($ch);
+
+            $crawler = new Crawler(
+                (string) $content
+            );
+            $table = $crawler->filter('#RightBody table td')->each(function ($td, $i) {
+                return $td->filter('a')->each(function ($a, $j) {
+                    return trim($a->text());
+                });
+            });
+            
+            foreach($table as $index => $tr){
+                if($index==0){
+                    foreach($tr as $td){
+                        Organization::where('code',$td)->update(
+                            [
+                                'sector' => $sector['name']
+                            ]
+                        );
+                    }
+                }
             }
         }
 

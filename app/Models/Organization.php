@@ -36,6 +36,10 @@ class Organization extends Model
             }
         })->when($filters['se_index'] ?? null, function ($query, $se_index) {
             $query->where('se_index', $se_index);
+        })->when($filters['category'] ?? null, function ($query, $category) {
+            $query->where('category', $category);
+        })->when($filters['sector'] ?? null, function ($query, $sector) {
+            $query->where('sector', $sector);
         });
     }
 }
