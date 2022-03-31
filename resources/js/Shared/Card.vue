@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-md shadow grid grid-cols-2">
     <div class="text-center px-6 py-4 font-bold text-white border border-solid bg-indigo-800 col-span-2">
-      <span class="float-left cursor-pointer"><i class="fa-solid fa-heart text-indigo-800"></i></span>
+      <span class="float-left cursor-pointer" v-on:click="watchList()"><i class="fa-solid fa-heart" :class="watchlisted && 'text-yellow-400'"></i></span>
       {{ organization.code }}
       <span class="float-right cursor-pointer" v-on:click="toggleModal()"><i class="fa-solid fa-circle-info"></i></span>
     </div>
@@ -29,9 +29,13 @@
       <span class="block text-center text-xs">U P/E * P/NAV</span>
       <h4 class="text-center text-2xl">{{ organization.upepnav }}</h4>
     </div>
-    <div class="px-3 py-2 font-bold text-white border border-solid  col-span-2" :class="organization.div>0 ? (organization.div>5 ? 'bg-green-600' : 'bg-orange-600') : 'bg-red-600'">
+    <div class="px-3 py-2 font-bold text-white border border-solid" :class="organization.div>0 ? (organization.div>5 ? 'bg-green-600' : 'bg-orange-600') : 'bg-red-600'">
       <span class="block text-center text-xs">Dividend Yield</span>
       <h4 class="text-center text-2xl">{{ organization.div }}</h4>
+    </div>
+    <div class="px-3 py-2 font-bold text-white border border-solid" :class="organization.avg_dividend>0 ? (organization.avg_dividend>5 ? 'bg-green-600' : 'bg-orange-600') : 'bg-red-600'">
+      <span class="block text-center text-xs">Avg Cash Dividend</span>
+      <h4 class="text-center text-2xl">{{ organization.avg_dividend }} %</h4>
     </div>
   </div>
 
@@ -82,18 +86,26 @@
               <span class="block text-center text-xs">Dividend Yield</span>
               <h4 class="text-center text-2xl">{{ organization.div }}</h4>
             </div>
-            <div class="px-3 py-2 font-bold text-white border-solid border-t-0 border-r border-b border-l-0" :class="organization.eps>0 ? 'bg-green-600' : 'bg-red-600'">
+            <div class="px-3 py-2 font-bold text-white border-solid border-t-0 border-r border-b border-l-0" :class="organization.avg_dividend>0 ? (organization.avg_dividend>5 ? 'bg-green-600' : 'bg-orange-600') : 'bg-red-600'">
+              <span class="block text-center text-xs">Avg Cash Dividend</span>
+              <h4 class="text-center text-2xl">{{ organization.avg_dividend }} %</h4>
+            </div>
+            <!-- <div class="px-3 py-2 font-bold text-white border-solid border-t-0 border-r border-b border-l-0" :class="organization.eps>0 ? 'bg-green-600' : 'bg-red-600'">
               <span class="block text-center text-xs">EPS</span>
               <h4 class="text-center text-2xl">{{ organization.eps }}</h4>
-            </div>
+            </div> -->
             <div class="px-3 py-2 font-bold text-white border-solid border-t-0 border-r border-b border-l bg-indigo-800">
               <span class="block text-center text-xs">Category</span>
               <h4 class="text-center text-2xl">{{ organization.category }}</h4>
             </div>
             <div class="px-3 py-2 font-bold text-white border-solid border-t-0 border-r border-b border-l-0 bg-indigo-800">
+              <span class="block text-center text-xs">Sector</span>
+              <h4 class="text-center text-2xl">{{ organization.sector }}</h4>
+            </div>
+            <!-- <div class="px-3 py-2 font-bold text-white border-solid border-t-0 border-r border-b border-l bg-indigo-800 col-span-2">
               <span class="block text-center text-xs">Market Capital (mn)</span>
               <h4 class="text-center text-2xl">{{ organization.marketCap }}</h4>
-            </div>
+            </div> -->
             <div class="px-3 py-2 font-bold text-white border-solid border-t-0 border-r border-b border-l bg-indigo-800">
               <span class="block text-center text-xs">Long-term Loan (mn)</span>
               <h4 class="text-center text-2xl">{{ organization.longLoan }}</h4>
@@ -129,18 +141,46 @@
 </template>
 
 <script>
+import { usePage } from '@inertiajs/inertia-vue3';
 export default {
   props: {
     organization: {},
+    // auth: Object,
   },
   data() {
     return {
-      showModal: false
+      showModal: false,
+      watchlisted: this.organization.watchlisted ? true : false
     }
   },
   methods: {
     toggleModal: function(){
       this.showModal = !this.showModal;
+    },
+    watchList: function(){
+      if(usePage().props.value.auth.user){
+        fetch('/organizations/watch/' + this.organization.id)
+        .then(response => response.json())
+        .then(data => {
+          if(this.watchlisted){
+            this.watchlisted = false;
+          }else{
+            this.watchlisted = true;
+          }
+          if(this.isUrl('users/watchlist')){
+            this.$inertia.visit('/users/watchlist', { only: ['organizations'] });
+          }
+        });
+      }else{
+        this.$inertia.get('/login');
+      }
+    },
+    isUrl(...urls) {
+      let currentUrl = this.$page.url.substr(1)
+      if (urls[0] === '') {
+        return currentUrl === ''
+      }
+      return urls.filter((url) => currentUrl.startsWith(url)).length
     }
   }
 }

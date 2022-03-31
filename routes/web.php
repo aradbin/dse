@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [DashboardController::class, 'index'])
+Route::get('/', [DashboardController::class, 'home'])
     ->name('home');
 
 // Auth
@@ -81,6 +81,10 @@ Route::put('users/{user}/restore', [UsersController::class, 'restore'])
     ->name('users.restore')
     ->middleware('auth');
 
+Route::get('users/watchlist', [UsersController::class, 'watchlist'])
+    ->name('users.watchlist')
+    ->middleware('auth');
+
 // Organizations
 
 Route::get('organizations', [OrganizationsController::class, 'index'])
@@ -117,6 +121,10 @@ Route::put('organizations/{organization}/restore', [OrganizationsController::cla
 
 Route::get('organizations/sync', [OrganizationsController::class, 'sync'])
     ->name('organizations.sync')
+    ->middleware('auth');
+
+Route::get('organizations/watch/{id}', [OrganizationsController::class, 'watch'])
+    ->name('organizations.watch')
     ->middleware('auth');
 
 // Contacts

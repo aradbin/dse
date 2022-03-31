@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Organization;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -119,5 +120,49 @@ class UsersController extends Controller
         $user->restore();
 
         return Redirect::back()->with('success', 'User restored.');
+    }
+
+    public function watchlist()
+    {
+        $per_page = 20;
+        if(Request::get('per_page')){
+            $per_page = Request::get('per_page');
+        }
+        return Inertia::render('Organizations/Index', [
+            'filters' => Request::all('search', 'se_index', 'category', 'sector', 'per_page'),
+            'sectors' => Organization::groupBy('sector')->select('sector')->get(),
+            'organizations' => Organization::join('watchlists','watchlists.organization_id','organizations.id')
+                ->where('watchlists.user_id',Auth::user()->id)
+                ->with('dividends')
+                ->orderBy('organizations.code')
+                ->filter(Request::only('search', 'se_index', 'category', 'sector'))
+                ->select('organizations.id','organizations.code','organizations.category','organizations.sector','watchlists.id as watchlisted')
+                ->paginate($per_page)
+                ->withQueryString()
+                ->through(fn ($organization) => [
+                    'id' => $organization->id,
+                    'code' => $organization->code,
+                    'name' => null,
+                    'category' => $organization->category,
+                    'sector' => $organization->sector,
+                    'price' => null,
+                    'eps' => null,
+                    'pe' => null,
+                    'upe' => null,
+                    'pnav' => null,
+                    'pepnav' => null,
+                    'upepnav' => null,
+                    'div' => null,
+                    'agm' => null,
+                    'listingYear' => null,
+                    'longLoan' => null,
+                    'shortLoan' => null,
+                    'marketCap' => null,
+                    'website' => null,
+                    'watchlisted' => $organization->watchlisted,
+                    'dividends' => json_encode($organization->dividends),
+                    'avg_dividend' => null
+                ]),
+        ]);
     }
 }

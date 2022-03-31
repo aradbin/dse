@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organization;
+use App\Models\Watchlist;
+use App\Models\Dividend;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -23,17 +25,27 @@ class OrganizationsController extends Controller
         return Inertia::render('Organizations/Index', [
             'filters' => Request::all('search', 'se_index', 'category', 'sector', 'per_page'),
             'sectors' => Organization::groupBy('sector')->select('sector')->get(),
-            'organizations' => Organization::where('account_id',1)
-                ->orderBy('code')
+            'organizations' => Organization::where('organizations.account_id',1)
+                ->leftJoin('watchlists',function($join){
+                    $join->on('watchlists.organization_id','organizations.id');
+                    if(Auth::user()){
+                        $join->where('watchlists.user_id',Auth::user()->id);
+                    }else{
+                        $join->where('watchlists.user_id',0);
+                    }
+                })
+                ->with('dividends')
+                ->orderBy('organizations.code')
                 ->filter(Request::only('search', 'se_index', 'category', 'sector'))
-                ->select('id','code')
+                ->select('organizations.id','organizations.code','organizations.category','organizations.sector','watchlists.id as watchlisted')
                 ->paginate($per_page)
                 ->withQueryString()
                 ->through(fn ($organization) => [
                     'id' => $organization->id,
                     'code' => $organization->code,
-                    'name' => $organization->name,
+                    'name' => null,
                     'category' => $organization->category,
+                    'sector' => $organization->sector,
                     'price' => null,
                     'eps' => null,
                     'pe' => null,
@@ -47,7 +59,10 @@ class OrganizationsController extends Controller
                     'longLoan' => null,
                     'shortLoan' => null,
                     'marketCap' => null,
-                    'website' => null
+                    'website' => null,
+                    'watchlisted' => $organization->watchlisted,
+                    'dividends' => json_encode($organization->dividends),
+                    'avg_dividend' => null
                 ]),
         ]);
     }
@@ -124,6 +139,21 @@ class OrganizationsController extends Controller
         $organization->restore();
 
         return Redirect::back()->with('success', 'Organization restored.');
+    }
+
+    public function watch($id)
+    {
+        $watchlist = Watchlist::where('user_id',Auth::user()->id)->where('organization_id',$id)->first();
+        if($watchlist){
+            $watchlist->delete();
+        }else{
+            Watchlist::create([
+                'user_id' => Auth::user()->id,
+                'organization_id' => $id
+            ]);
+        }
+
+        return true;
     }
 
     public function sync()
@@ -261,7 +291,28 @@ class OrganizationsController extends Controller
             }
         }
 
-        return Redirect::route('organizations');
+        // Dividend History
+        $organizations = Organization::get();
+        foreach($organizations as $organization){
+            $ch = curl_init("https://www.amarstock.com/company/a4e5-dd034dc69f8a/?symbol=".$organization->code);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+            $content = curl_exec($ch);
+            curl_close($ch);
+
+            foreach(json_decode($content) as $dividend){
+                Dividend::firstOrCreate([
+                    'organization_id' => $organization->id,
+                    'cash' => $dividend->c,
+                    'stock' => $dividend->d,
+                    'eps' => $dividend->e,
+                    'year' => $dividend->y,
+                ]);
+            }
+        }
+
+        // return Redirect::route('organizations');
+        return 'Success';
     }
 
     public function show($name)

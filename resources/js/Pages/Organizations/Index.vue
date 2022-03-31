@@ -1,7 +1,8 @@
 <template>
   <div>
     <Head title="Organizations" />
-    <h1 class="mb-8 text-3xl font-bold">Organizations</h1>
+    <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('organizations')">Organizations</h1>
+    <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('users/watchlist')">My Watchlist</h1>
     <div class="flex items-end justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full" @reset="reset">
         <div class="w-1/5 mr-2">
@@ -90,14 +91,15 @@ export default {
         sector: this.filters.sector,
         per_page: this.filters.per_page,
       },
-      organizationsArray: []
+      organizationsArray: [],
+      url: '/organizations'
     }
   },
   watch: {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get('/organizations', pickBy(this.form), {
+        this.$inertia.get(this.url, pickBy(this.form), {
           preserveState: true,
           onSuccess: () => {this.getDetails()}
         })
@@ -114,11 +116,21 @@ export default {
         return fetch('/organizations/show/' + org.code)
           .then(response => response.json())
           .then(data => {
-              this.organizationsArray[index] = {
+            let total_dividend = 0;
+            let avg_dividend = 0;
+            let dividends = JSON.parse(org.dividends)
+            if(dividends?.length>0){
+              dividends.map(function(dividend){
+                total_dividend = total_dividend + dividend.cash;
+              });
+              avg_dividend = (((total_dividend/dividends.length)/10)/data.LastTrade)*100;
+            }
+            this.organizationsArray[index] = {
               'id' : org.id,
               'code' : org.code,
               'name' : data.FullName,
               'category' : data.MarketCategory,
+              'sector' : org.sector,
               'price' : data.LastTrade,
               'eps' : data.EPS,
               'pe' : data.AuditedPE,
@@ -132,13 +144,26 @@ export default {
               'longLoan' : data.LongLoan,
               'shortLoan' : data.ShortLoan,
               'marketCap' : data.MarketCap,
-              'website' : data.Web
+              'website' : data.Web,
+              'watchlisted' : org.watchlisted,
+              'dividends': dividends,
+              'avg_dividend': avg_dividend.toFixed(2)
             }
           })
       }));
+    },
+    isUrl(...urls) {
+      let currentUrl = this.$page.url.substr(1)
+      if (urls[0] === '') {
+        return currentUrl === ''
+      }
+      return urls.filter((url) => currentUrl.startsWith(url)).length
     }
   },
   mounted(){
+    if(this.isUrl('users/watchlist')){
+      this.url = '/users/watchlist';
+    }
     this.getDetails();
     window.setInterval(() => {
       let d = new Date();
