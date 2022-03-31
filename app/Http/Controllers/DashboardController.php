@@ -12,14 +12,19 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if(Auth::user()){
-            return Inertia::render('Dashboard/Index');
-        }
+        return Inertia::render('Dashboard/Index');
+    }
 
-        if(Request::ajax()){
-            return Redirect::route('login');
-        }
-        
-        return Redirect::route('organizations');
+    public function home()
+    {
+        // if(Auth::user()){
+        //     if(Request::ajax()){
+        //         return Inertia::render('Dashboard/Home');
+        //     }
+
+        //     return redirect('/users/watchlist');
+        // }
+
+        return Inertia::render('Dashboard/Home');
     }
 }
