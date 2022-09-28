@@ -15,10 +15,10 @@ class AddFieldsToOrganizationsTable extends Migration
     {
         Schema::table('organizations', function (Blueprint $table) {
             $table->foreign('account_id')->references('id')->on('accounts');
-            $table->string('code', 100)->nullable()->after('name');
-            $table->string('se_index', 100)->nullable()->after('code');
-            $table->string('category', 100)->nullable()->after('index');
-            $table->string('sector', 100)->nullable()->after('category');
+            $table->string('code')->nullable()->after('name');
+            $table->string('se_index')->nullable()->after('code');
+            $table->string('category')->nullable()->after('index');
+            $table->string('sector')->nullable()->after('category');
         });
     }
 
