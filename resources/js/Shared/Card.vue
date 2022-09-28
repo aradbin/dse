@@ -167,8 +167,8 @@ export default {
           }else{
             this.watchlisted = true;
           }
-          if(this.isUrl('users/watchlist')){
-            this.$inertia.visit('/users/watchlist', { only: ['organizations'] });
+          if(this.isUrl('watchlist')){
+            this.$inertia.visit('/watchlist', { only: ['organizations'] });
           }
         });
       }else{

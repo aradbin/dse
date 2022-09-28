@@ -2,7 +2,7 @@
   <div>
     <Head title="Organizations" />
     <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('organizations')">Organizations</h1>
-    <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('users/watchlist')">My Watchlist</h1>
+    <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('watchlist')">My Watchlist</h1>
     <div class="flex items-end justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full" @reset="reset">
         <div class="w-1/5 mr-2">
@@ -161,8 +161,8 @@ export default {
     }
   },
   mounted(){
-    if(this.isUrl('users/watchlist')){
-      this.url = '/users/watchlist';
+    if(this.isUrl('watchlist')){
+      this.url = '/watchlist';
     }
     this.getDetails();
     window.setInterval(() => {
