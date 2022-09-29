@@ -9,7 +9,7 @@ class Dividend extends Model
 {
     use HasFactory;
 
-    public function Organization()
+    public function organization()
     {
         return $this->belongsTo(Organization::class);
     }
