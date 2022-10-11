@@ -22,7 +22,7 @@ class OrganizationsController extends Controller
         if(Request::get('per_page')){
             $per_page = Request::get('per_page');
         }
-        
+
         return Inertia::render('Organizations/Index', [
             'filters' => Request::all('search', 'se_index', 'category', 'sector', 'per_page'),
             'sectors' => Organization::groupBy('sector')->select('sector')->get(),
@@ -58,6 +58,15 @@ class OrganizationsController extends Controller
                     'avg_dividend' => null
                 ]),
         ]);
+    }
+
+    public function all()
+    {
+        return Organization::where('organizations.account_id',1)
+            ->with('dividends','isWatchListed')
+            ->orderBy('organizations.code')
+            ->select('organizations.id','organizations.code','organizations.category','organizations.sector')
+            ->get();
     }
 
     public function create()

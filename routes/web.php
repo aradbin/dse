@@ -73,6 +73,10 @@ Route::get('organizations', [OrganizationsController::class, 'index'])
     ->name('organizations');
     // ->middleware('guest');
 
+Route::get('organizations/all', [OrganizationsController::class, 'all'])
+    ->name('organizations.all');
+    // ->middleware('guest');
+
 Route::get('organizations/create', [OrganizationsController::class, 'create'])
     ->name('organizations.create')
     ->middleware('auth');
