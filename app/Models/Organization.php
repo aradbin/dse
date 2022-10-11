@@ -22,7 +22,7 @@ class Organization extends Model
 
     public function watchlist()
     {
-        return $this->belongsTo(Watchlist::class);
+        return $this->belongsTo(Watchlist::class, 'id', 'organization_id');
     }
 
     public function isWatchListed()

@@ -110,7 +110,7 @@ export default {
     reset() {
       this.form = mapValues(this.form, () => null)
     },
-    async getDetails(){
+    async getDetails(){console.log(this.organizations.data)
       this.organizationsArray = this.organizations.data;
       await Promise.all(this.organizations.data.map((org, index, array) => {
         return fetch('/organizations/show/' + org.code)
@@ -118,12 +118,11 @@ export default {
           .then(data => {
             let total_dividend = 0;
             let avg_dividend = 0;
-            let dividends = JSON.parse(org.dividends)
-            if(dividends?.length>0){
-              dividends.map(function(dividend){
+            if(org?.dividends?.length>0){
+              org.dividends.map(function(dividend){
                 total_dividend = total_dividend + dividend.cash;
               });
-              avg_dividend = (((total_dividend/dividends.length)/10)/data.LastTrade)*100;
+              avg_dividend = (((total_dividend/org.dividends.length)/10)/data.LastTrade)*100;
             }
             this.organizationsArray[index] = {
               'id' : org.id,
@@ -145,8 +144,8 @@ export default {
               'shortLoan' : data.ShortLoan,
               'marketCap' : data.MarketCap,
               'website' : data.Web,
-              'watchlisted' : org.watchlisted,
-              'dividends': dividends,
+              'watchlisted' : JSON.stringify(org.watchlisted),
+              'dividends': JSON.stringify(org.dividends),
               'avg_dividend': avg_dividend.toFixed(2)
             }
           })

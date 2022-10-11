@@ -160,7 +160,7 @@ class UsersController extends Controller
                     'marketCap' => null,
                     'website' => null,
                     'watchlisted' => $organization->watchlisted,
-                    'dividends' => json_encode($organization->dividends),
+                    'dividends' => $organization->dividends,
                     'avg_dividend' => null
                 ]),
         ]);

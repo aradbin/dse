@@ -14,12 +14,13 @@ class CreateWatchlistsTable extends Migration
     public function up()
     {
         Schema::create('watchlists', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->integer('organization_id')->unsigned();
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

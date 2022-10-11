@@ -22,6 +22,7 @@ class OrganizationsController extends Controller
         if(Request::get('per_page')){
             $per_page = Request::get('per_page');
         }
+        
         return Inertia::render('Organizations/Index', [
             'filters' => Request::all('search', 'se_index', 'category', 'sector', 'per_page'),
             'sectors' => Organization::groupBy('sector')->select('sector')->get(),
@@ -52,8 +53,8 @@ class OrganizationsController extends Controller
                     'shortLoan' => null,
                     'marketCap' => null,
                     'website' => null,
-                    'watchlisted' => $organization->isWatchListed(),
-                    'dividends' => json_encode($organization->dividends),
+                    'watchlisted' => $organization->isWatchListed,
+                    'dividends' => $organization->dividends,
                     'avg_dividend' => null
                 ]),
         ]);

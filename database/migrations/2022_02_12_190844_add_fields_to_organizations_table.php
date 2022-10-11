@@ -17,7 +17,7 @@ class AddFieldsToOrganizationsTable extends Migration
             $table->foreign('account_id')->references('id')->on('accounts');
             $table->string('code')->nullable()->after('name');
             $table->string('se_index')->nullable()->after('code');
-            $table->string('category')->nullable()->after('index');
+            $table->string('category')->nullable()->after('se_index');
             $table->string('sector')->nullable()->after('category');
         });
     }

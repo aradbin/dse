@@ -17,26 +17,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $account = Account::create(['name' => 'Stock Exchange']);
+        Account::create([
+            'code' => 'DSE',
+            'name' => 'Dhaka Stock Exchange'
+        ]);
 
         User::create([
-            'account_id' => $account->id,
             'first_name' => 'Arad',
             'last_name' => 'Bin',
             'email' => 'aradbin@gmail.com',
             'password' => 'aradbin',
             'owner' => true,
         ]);
-
-        // User::factory(5)->create(['account_id' => $account->id]);
-
-        // $organizations = Organization::factory(100)
-        //     ->create(['account_id' => $account->id]);
-
-        // Contact::factory(100)
-        //     ->create(['account_id' => $account->id])
-        //     ->each(function ($contact) use ($organizations) {
-        //         $contact->update(['organization_id' => $organizations->random()->id]);
-        //     });
     }
 }

@@ -14,7 +14,7 @@ class CreateTradesTable extends Migration
     public function up()
     {
         Schema::create('trades', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->integer('portfolio_id')->unsigned();
             $table->foreign('portfolio_id')->references('id')->on('portfolios');
             $table->integer('organization_id')->unsigned()->nullable();

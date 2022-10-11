@@ -14,7 +14,7 @@ class CreateChargesTable extends Migration
     public function up()
     {
         Schema::create('charges', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->integer('portfolio_id')->unsigned();
             $table->foreign('portfolio_id')->references('id')->on('portfolios');
             $table->integer('type')->comment('1. BO Charge, 2. Trading Charge 3. IPO Charge');

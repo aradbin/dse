@@ -14,7 +14,7 @@ class CreateDividendsTable extends Migration
     public function up()
     {
         Schema::create('dividends', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->integer('organization_id')->unsigned();
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->float('cash');
@@ -22,6 +22,7 @@ class CreateDividendsTable extends Migration
             $table->float('eps');
             $table->integer('year');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
