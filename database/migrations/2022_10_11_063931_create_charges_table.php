@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTradesTable extends Migration
+class CreateChargesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,13 @@ class CreateTradesTable extends Migration
      */
     public function up()
     {
-        Schema::create('trades', function (Blueprint $table) {
+        Schema::create('charges', function (Blueprint $table) {
             $table->id();
             $table->integer('portfolio_id')->unsigned();
             $table->foreign('portfolio_id')->references('id')->on('portfolios');
-            $table->integer('organization_id')->unsigned()->nullable();
-            $table->foreign('organization_id')->references('id')->on('organizations');
-            $table->boolean('type')->comment('1. Buy, 2. Sell');
-            $table->float('price')->default(10);
-            $table->float('quantity')->default(1);
-            $table->float('charge')->default(0.04);
+            $table->integer('type')->comment('1. BO Charge, 2. Trading Charge 3. IPO Charge');
+            $table->integer('associate_id')->unsigned()->nullable();
+            $table->float('amount');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -35,6 +32,6 @@ class CreateTradesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trades');
+        Schema::dropIfExists('charges');
     }
 }

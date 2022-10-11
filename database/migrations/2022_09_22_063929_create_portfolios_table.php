@@ -20,9 +20,9 @@ class CreatePortfoliosTable extends Migration
             $table->string('bo_account')->nullable();
             $table->integer('broker_id')->unsigned();
             $table->foreign('broker_id')->references('id')->on('brokers');
-            $table->string('broker_user_id')->nullable();
-            $table->integer('account_id')->unsigned();
-            $table->foreign('account_id')->references('id')->on('accounts');
+            // $table->string('broker_user_id')->nullable();
+            // $table->integer('account_id')->unsigned();
+            // $table->foreign('account_id')->references('id')->on('accounts');
             $table->float('trading_charge')->default(0.5)->comment('on percentage');
             $table->float('balance')->default(0);
             $table->timestamps();
