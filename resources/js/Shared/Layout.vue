@@ -76,6 +76,7 @@ import Logo from '@/Shared/Logo'
 import Dropdown from '@/Shared/Dropdown'
 import MainMenu from '@/Shared/MainMenu'
 import FlashMessages from '@/Shared/FlashMessages'
+import { store } from '../store'
 
 export default {
   components: {
@@ -89,10 +90,22 @@ export default {
   props: {
     auth: Object,
   },
-  methods: {
-    mounted(){
-      console.log(this.auth);
+  data() {
+    return {
+      store
     }
+  },
+  methods: {
+    getOrganizations(){
+      fetch('/organizations/all')
+        .then(response => response.json())
+        .then(data => {
+          this.store.updateOrganizations(data)
+        })
+    }
+  },
+  mounted(){
+    this.getOrganizations();
   }
 }
 </script>

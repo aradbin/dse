@@ -65,6 +65,7 @@ import mapValues from 'lodash/mapValues'
 import Pagination from '@/Shared/Pagination'
 import SearchFilter from '@/Shared/SearchFilter'
 import Card from '@/Shared/Card'
+import { store } from '../../store'
 
 export default {
   components: {
@@ -91,6 +92,7 @@ export default {
         sector: this.filters.sector,
         per_page: this.filters.per_page,
       },
+      store,
       organizationsArray: [],
       url: '/organizations'
     }
@@ -110,8 +112,8 @@ export default {
     reset() {
       this.form = mapValues(this.form, () => null)
     },
-    async getDetails(){console.log(this.organizations.data)
-      this.organizationsArray = this.organizations.data;
+    async getDetails(){
+      this.organizationsArray = this.store.organizations;
       await Promise.all(this.organizations.data.map((org, index, array) => {
         return fetch('/organizations/show/' + org.code)
           .then(response => response.json())
