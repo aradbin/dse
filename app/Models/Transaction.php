@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Account extends Model
+class Transaction extends Model
 {
     use SoftDeletes;
-    
-    public function organizations()
+
+    public function portfolio()
     {
-        return $this->hasMany(Organization::class);
+        return $this->belongsTo(Portfolio::class);
     }
 }

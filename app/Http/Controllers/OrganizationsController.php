@@ -26,18 +26,10 @@ class OrganizationsController extends Controller
             'filters' => Request::all('search', 'se_index', 'category', 'sector', 'per_page'),
             'sectors' => Organization::groupBy('sector')->select('sector')->get(),
             'organizations' => Organization::where('organizations.account_id',1)
-                ->leftJoin('watchlists',function($join){
-                    $join->on('watchlists.organization_id','organizations.id');
-                    if(Auth::user()){
-                        $join->where('watchlists.user_id',Auth::user()->id);
-                    }else{
-                        $join->where('watchlists.user_id',0);
-                    }
-                })
-                ->with('dividends')
+                ->with('dividends','isWatchListed')
                 ->orderBy('organizations.code')
                 ->filter(Request::only('search', 'se_index', 'category', 'sector'))
-                ->select('organizations.id','organizations.code','organizations.category','organizations.sector','watchlists.id as watchlisted')
+                ->select('organizations.id','organizations.code','organizations.category','organizations.sector')
                 ->paginate($per_page)
                 ->withQueryString()
                 ->through(fn ($organization) => [
@@ -60,7 +52,7 @@ class OrganizationsController extends Controller
                     'shortLoan' => null,
                     'marketCap' => null,
                     'website' => null,
-                    'watchlisted' => $organization->watchlisted,
+                    'watchlisted' => $organization->isWatchListed(),
                     'dividends' => json_encode($organization->dividends),
                     'avg_dividend' => null
                 ]),
@@ -143,7 +135,7 @@ class OrganizationsController extends Controller
 
     public function watch($id)
     {
-        $watchlist = Watchlist::where('user_id',Auth::user()->id)->where('organization_id',$id)->first();
+        $watchlist = Watchlist::where('organization_id',$id)->first();
         if($watchlist){
             $watchlist->delete();
         }else{

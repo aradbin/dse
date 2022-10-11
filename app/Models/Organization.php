@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Organization extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     public function resolveRouteBinding($value, $field = null)
@@ -16,14 +15,33 @@ class Organization extends Model
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
 
-    public function contacts()
+    public function account()
     {
-        return $this->hasMany(Contact::class);
+        return $this->belongsTo(Account::class);
+    }
+
+    public function watchlist()
+    {
+        return $this->belongsTo(Watchlist::class);
+    }
+
+    public function isWatchListed()
+    {
+        if(Auth::user()){
+            return $this->watchlist()->where('user_id',Auth::user()->id);
+        }
+        
+        return null;
     }
 
     public function dividends()
     {
         return $this->hasMany(Dividend::class);
+    }
+
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class);
     }
 
     public function scopeFilter($query, array $filters)
