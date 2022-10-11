@@ -63,6 +63,10 @@ Route::get('portfolio', [PortfoliosController::class, 'index'])
     ->name('portfolio')
     ->middleware('auth');
 
+Route::post('portfolio', [PortfoliosController::class, 'store'])
+    ->name('portfolio.store')
+    ->middleware('auth');
+
 // Organizations
 
 Route::get('organizations', [OrganizationsController::class, 'index'])

@@ -22,7 +22,7 @@ class CreateTradesTable extends Migration
             $table->boolean('type')->comment('1. Buy, 2. Sell');
             $table->float('price')->default(10);
             $table->float('quantity')->default(1);
-            $table->float('charge')->default(0.04);
+            $table->float('charge')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

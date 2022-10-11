@@ -18,4 +18,9 @@ class Portfolio extends Model
     {
         return $this->belongsTo(Broker::class);
     }
+
+    public function trades()
+    {
+        return $this->hasMany(Trade::class);
+    }
 }
