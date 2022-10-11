@@ -4,7 +4,7 @@
     <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('organizations')">Organizations</h1>
     <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('users/watchlist')">My Watchlist</h1>
     <div class="flex items-end justify-between mb-6">
-      <search-filter v-model="form.search" class="mr-4 w-full" @reset="reset">
+      <search-filter v-model="form.search" class="w-full" @reset="reset">
         <div class="w-1/5 mr-2">
           <label class="block text-gray-700">Per Page:</label>
           <select v-model="form.per_page" class="form-select w-full mt-2">
@@ -35,7 +35,7 @@
             <option value="Z">Z</option>
           </select>
         </div>
-        <div class="w-1/5 mr-2">
+        <div class="w-2/5">
           <label class="block text-gray-700">Sector:</label>
           <select v-model="form.sector" class="form-select w-full mt-2">
             <option :value="null">All</option>
@@ -43,10 +43,10 @@
           </select>
         </div>
       </search-filter>
-      <Link class="btn-indigo" href="/organizations/sync" v-if="auth.user && auth.user.owner==1">
+      <!-- <Link class="btn-indigo" href="/organizations/sync" v-if="auth.user && auth.user.owner==1">
         <span>Sync</span>
         <span class="hidden md:inline">&nbsp;Organizations</span>
-      </Link>
+      </Link> -->
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
       <card v-for="organization in organizationsArray" :key="organization.id" :organization="organization" />
