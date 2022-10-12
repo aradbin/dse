@@ -18,18 +18,19 @@ class OrganizationsController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Organizations/Index', [
-            'sectors' => Organization::groupBy('sector')->select('sector')->get()
-        ]);
+        return Inertia::render('Organizations/Index');
     }
 
     public function all()
     {
-        return Organization::where('organizations.account_id',1)
-            ->with('dividends','isWatchListed')
-            ->orderBy('organizations.code')
-            ->select('organizations.id','organizations.code','organizations.category','organizations.sector')
-            ->get();
+        return [
+            'organizations' => Organization::where('organizations.account_id',1)
+                ->with('dividends','isWatchListed')
+                ->orderBy('organizations.code')
+                ->select('organizations.id','organizations.code','organizations.category','organizations.sector')
+                ->get(),
+            'sectors' => Organization::groupBy('sector')->select('sector')->get()
+        ];
     }
 
     public function create()

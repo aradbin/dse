@@ -3,6 +3,7 @@ import { reactive } from 'vue'
 export const store = reactive({
   organizations: [],
   filteredOrganizations: [],
+  sectors: [],
   query: {
     search: null,
     se_index: null,
@@ -10,7 +11,7 @@ export const store = reactive({
     sector: null,
     per_page: 20,
     page: 1,
-    watchlist: false
+    watchlist: null
   },
   filterOrganizations(query){
     const arr = this.organizations.filter(function(org){
@@ -27,7 +28,7 @@ export const store = reactive({
       if(query.sector && query.sector!==org.sector){
         bool = false;
       }
-      if(query.watchlist && !org.isWatchListed){
+      if(query.watchlist && !org.is_watch_listed){
         bool = false;
       }
       return bool;
@@ -38,6 +39,9 @@ export const store = reactive({
   updateOrganizations(arr){
     this.organizations = arr;
     this.filterOrganizations(this.query);
+  },
+  updateSectors(arr){
+    this.sectors = arr;
   },
   updateOrganization(obj){
     const index = this.organizations.findIndex(org => org.code === obj.code);
@@ -50,10 +54,10 @@ export const store = reactive({
   },
   toggleWatchlist(obj){
     const index = this.organizations.findIndex(org => org.code === obj.code);
-    if(this.organizations[index].isWatchListed){
-      this.organizations[index].isWatchListed = null;
+    if(this.organizations[index].is_watch_listed){
+      this.organizations[index].is_watch_listed = null;
     }else{
-      this.organizations[index].isWatchListed = { 'organization_id': org.id };
+      this.organizations[index].is_watch_listed = { 'organization_id': obj.id };
     }
     this.filterOrganizations(this.query);
   }

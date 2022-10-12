@@ -8,7 +8,7 @@
         <div class="w-1/5 mr-2">
           <label class="block text-gray-700">Per Page:</label>
           <select v-model="form.per_page" class="form-select w-full mt-2">
-            <option :value="null">20</option>
+            <option value="20">20</option>
             <option value="50">50</option>
             <option value="100">100</option>
             <option value="200">200</option>
@@ -39,7 +39,7 @@
           <label class="block text-gray-700">Sector:</label>
           <select v-model="form.sector" class="form-select w-full mt-2">
             <option :value="null">All</option>
-            <option v-for="sector in sectors" :key="sector.sector" :value="sector.sector">{{ sector.sector }}</option>
+            <option v-for="sector in this.store.sectors" :key="sector.sector" :value="sector.sector">{{ sector.sector }}</option>
           </select>
         </div>
       </search-filter>
@@ -60,7 +60,6 @@ import { Head, Link } from '@inertiajs/inertia-vue3'
 import Icon from '@/Shared/Icon'
 import Layout from '@/Shared/Layout'
 import throttle from 'lodash/throttle'
-import mapValues from 'lodash/mapValues'
 import Pagination from '@/Shared/Pagination'
 import SearchFilter from '@/Shared/SearchFilter'
 import Card from '@/Shared/Card'
@@ -77,8 +76,7 @@ export default {
   },
   layout: Layout,
   props: {
-    auth: Object,
-    sectors: Array
+    auth: Object
   },
   data() {
     return {
@@ -100,7 +98,7 @@ export default {
     },
     form: {
       deep: true,
-      handler: throttle(function () {
+      handler: throttle(function () {console.log(this.form)
         store.updateQuery(this.form)
         this.getDetails();
       }, 150),
@@ -108,12 +106,17 @@ export default {
   },
   methods: {
     reset() {
-      this.form = mapValues(this.form, () => null)
+      this.form = {
+        search: null,
+        se_index: null,
+        category: null,
+        sector: null,
+        per_page: 20,
+        page: 1,
+        watchlist: null
+      };
     },
     async getDetails(updatePrice=false){
-      if(this.isUrl('watchlist')){
-        form.watchlist = true;
-      }
       await Promise.all(this.store.filteredOrganizations.map((org) => {
         if(updatePrice || !org.price){
           return fetch('/organizations/show/' + org.code)
@@ -147,7 +150,7 @@ export default {
                 'shortLoan' : data.ShortLoan,
                 'marketCap' : data.MarketCap,
                 'website' : data.Web,
-                'isWatchListed' : org.isWatchListed,
+                'is_watch_listed' : org.is_watch_listed,
                 'dividends': org.dividends,
                 'avg_dividend': avg_dividend.toFixed(2)
               });
@@ -164,6 +167,13 @@ export default {
     }
   },
   mounted(){
+    if(this.isUrl('watchlist')){
+      this.form.watchlist = true;
+      store.updateQuery(this.form)
+    }else{
+      this.form.watchlist = false;
+      store.updateQuery(this.form)
+    }
     this.getDetails();
     window.setInterval(() => {
       let d = new Date();

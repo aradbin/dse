@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-md shadow grid grid-cols-2">
     <div class="text-center px-6 py-4 font-bold text-white border border-solid bg-indigo-800 col-span-2">
-      <span class="float-left cursor-pointer" v-on:click="watchList()"><i class="fa-solid fa-heart" :class="organization.isWatchListed && 'text-yellow-400'"></i></span>
+      <span class="float-left cursor-pointer" v-on:click="watchList()"><i class="fa-solid fa-heart" :class="organization.is_watch_listed && 'text-yellow-400'"></i></span>
       {{ organization.code }}
       <span class="float-right cursor-pointer" v-on:click="toggleModal()"><i class="fa-solid fa-circle-info"></i></span>
     </div>
