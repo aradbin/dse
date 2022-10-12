@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-md shadow grid grid-cols-2">
     <div class="text-center px-6 py-4 font-bold text-white border border-solid bg-indigo-800 col-span-2">
-      <span class="float-left cursor-pointer" v-on:click="watchList()"><i class="fa-solid fa-heart" :class="watchlisted && 'text-yellow-400'"></i></span>
+      <span class="float-left cursor-pointer" v-on:click="watchList()"><i class="fa-solid fa-heart" :class="organization.isWatchListed && 'text-yellow-400'"></i></span>
       {{ organization.code }}
       <span class="float-right cursor-pointer" v-on:click="toggleModal()"><i class="fa-solid fa-circle-info"></i></span>
     </div>
@@ -142,15 +142,15 @@
 
 <script>
 import { usePage } from '@inertiajs/inertia-vue3';
+import { store } from '../../store'
 export default {
   props: {
-    organization: {},
-    // auth: Object,
+    organization: {}
   },
   data() {
     return {
       showModal: false,
-      watchlisted: this.organization.watchlisted ? true : false
+      store
     }
   },
   methods: {
@@ -159,28 +159,15 @@ export default {
     },
     watchList: function(){
       if(usePage().props.value.auth.user){
+        this.store.toggleWatchlist(this.organization);
         fetch('/organizations/watch/' + this.organization.id)
-        .then(response => response.json())
-        .then(data => {
-          if(this.watchlisted){
-            this.watchlisted = false;
-          }else{
-            this.watchlisted = true;
-          }
-          if(this.isUrl('watchlist')){
-            this.$inertia.visit('/watchlist', { only: ['organizations'] });
-          }
-        });
+          .then(response => response.json())
+          .catch((error) => {
+            this.store.toggleWatchlist(this.organization);
+          });
       }else{
         this.$inertia.get('/login');
       }
-    },
-    isUrl(...urls) {
-      let currentUrl = this.$page.url.substr(1)
-      if (urls[0] === '') {
-        return currentUrl === ''
-      }
-      return urls.filter((url) => currentUrl.startsWith(url)).length
     }
   }
 }

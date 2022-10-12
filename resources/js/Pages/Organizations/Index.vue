@@ -58,7 +58,6 @@
 <script>
 import { Head, Link } from '@inertiajs/inertia-vue3'
 import Icon from '@/Shared/Icon'
-import pickBy from 'lodash/pickBy'
 import Layout from '@/Shared/Layout'
 import throttle from 'lodash/throttle'
 import mapValues from 'lodash/mapValues'
@@ -79,9 +78,7 @@ export default {
   layout: Layout,
   props: {
     auth: Object,
-    filters: Object,
-    sectors: Array,
-    organizations: Object,
+    sectors: Array
   },
   data() {
     return {
@@ -91,85 +88,84 @@ export default {
         category: this.filters.category,
         sector: this.filters.sector,
         per_page: this.filters.per_page,
+        watchlist: false
       },
       store,
-      organizationsArray: [],
-      url: '/organizations'
+      organizationsArray: []
     }
   },
   watch: {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get(this.url, pickBy(this.form), {
-          preserveState: true,
-          onSuccess: () => {this.getDetails()}
-        })
-      }, 150),
+        this.getDetails();
+      }, 100),
     },
   },
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
     },
-    async getDetails(){
-      this.organizationsArray = this.store.organizations;
-      await Promise.all(this.organizations.data.map((org, index, array) => {
-        return fetch('/organizations/show/' + org.code)
-          .then(response => response.json())
-          .then(data => {
-            let total_dividend = 0;
-            let avg_dividend = 0;
-            if(org?.dividends?.length>0){
-              org.dividends.map(function(dividend){
-                total_dividend = total_dividend + dividend.cash;
+    async getDetails(updatePrice=false){
+      if(isUrl('watchlist')){
+        form.watchlist = true;
+      }
+      this.organizationsArray = this.store.filterOrganizations(this.form);
+      await Promise.all(this.organizationsArray.map((org, index, array) => {
+        if(updatePrice || !org.price){
+          return fetch('/organizations/show/' + org.code)
+            .then(response => response.json())
+            .then(data => {
+              let total_dividend = 0;
+              let avg_dividend = 0;
+              if(org?.dividends?.length>0){
+                org.dividends.map(function(dividend){
+                  total_dividend = total_dividend + dividend.cash;
+                });
+                avg_dividend = (((total_dividend/org.dividends.length)/10)/data.LastTrade)*100;
+              }
+              this.store.updateOrganization({
+                'id' : org.id,
+                'code' : org.code,
+                'name' : data.FullName,
+                'category' : data.MarketCategory,
+                'sector' : org.sector,
+                'price' : data.LastTrade,
+                'eps' : data.EPS,
+                'pe' : data.AuditedPE,
+                'upe' : data.UnAuditedPE,
+                'pnav' : data.NavPrice,
+                'pepnav' : (data.AuditedPE * data.NavPrice).toFixed(2),
+                'upepnav' : (data.UnAuditedPE * data.NavPrice).toFixed(2),
+                'div' : data.DividentYield,
+                'agm' : data.LastAGMHeld,
+                'listingYear' : data.ListingYear,
+                'longLoan' : data.LongLoan,
+                'shortLoan' : data.ShortLoan,
+                'marketCap' : data.MarketCap,
+                'website' : data.Web,
+                'isWatchListed' : org.isWatchListed,
+                'dividends': org.dividends,
+                'avg_dividend': avg_dividend.toFixed(2)
               });
-              avg_dividend = (((total_dividend/org.dividends.length)/10)/data.LastTrade)*100;
-            }
-            this.organizationsArray[index] = {
-              'id' : org.id,
-              'code' : org.code,
-              'name' : data.FullName,
-              'category' : data.MarketCategory,
-              'sector' : org.sector,
-              'price' : data.LastTrade,
-              'eps' : data.EPS,
-              'pe' : data.AuditedPE,
-              'upe' : data.UnAuditedPE,
-              'pnav' : data.NavPrice,
-              'pepnav' : (data.AuditedPE * data.NavPrice).toFixed(2),
-              'upepnav' : (data.UnAuditedPE * data.NavPrice).toFixed(2),
-              'div' : data.DividentYield,
-              'agm' : data.LastAGMHeld,
-              'listingYear' : data.ListingYear,
-              'longLoan' : data.LongLoan,
-              'shortLoan' : data.ShortLoan,
-              'marketCap' : data.MarketCap,
-              'website' : data.Web,
-              'watchlisted' : JSON.stringify(org.watchlisted),
-              'dividends': JSON.stringify(org.dividends),
-              'avg_dividend': avg_dividend.toFixed(2)
-            }
-          })
+            });
+        }
+        return true;
       }));
     },
-    isUrl(...urls) {
-      let currentUrl = this.$page.url.substr(1)
-      if (urls[0] === '') {
-        return currentUrl === ''
+    isUrl(url) {
+      if(this.$page.url.substr(1)===url){
+        return true;
       }
-      return urls.filter((url) => currentUrl.startsWith(url)).length
+      return false;
     }
   },
   mounted(){
-    if(this.isUrl('watchlist')){
-      this.url = '/watchlist';
-    }
     this.getDetails();
     window.setInterval(() => {
       let d = new Date();
       if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
-        this.getDetails();
+        this.getDetails(true);
       }
     }, 60000);
   }

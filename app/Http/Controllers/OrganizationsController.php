@@ -18,45 +18,8 @@ class OrganizationsController extends Controller
 {
     public function index()
     {
-        $per_page = 20;
-        if(Request::get('per_page')){
-            $per_page = Request::get('per_page');
-        }
-
         return Inertia::render('Organizations/Index', [
-            'filters' => Request::all('search', 'se_index', 'category', 'sector', 'per_page'),
-            'sectors' => Organization::groupBy('sector')->select('sector')->get(),
-            'organizations' => Organization::where('organizations.account_id',1)
-                ->with('dividends','isWatchListed')
-                ->orderBy('organizations.code')
-                ->filter(Request::only('search', 'se_index', 'category', 'sector'))
-                ->select('organizations.id','organizations.code','organizations.category','organizations.sector')
-                ->paginate($per_page)
-                ->withQueryString()
-                ->through(fn ($organization) => [
-                    'id' => $organization->id,
-                    'code' => $organization->code,
-                    'name' => null,
-                    'category' => $organization->category,
-                    'sector' => $organization->sector,
-                    'price' => null,
-                    'eps' => null,
-                    'pe' => null,
-                    'upe' => null,
-                    'pnav' => null,
-                    'pepnav' => null,
-                    'upepnav' => null,
-                    'div' => null,
-                    'agm' => null,
-                    'listingYear' => null,
-                    'longLoan' => null,
-                    'shortLoan' => null,
-                    'marketCap' => null,
-                    'website' => null,
-                    'watchlisted' => $organization->isWatchListed,
-                    'dividends' => $organization->dividends,
-                    'avg_dividend' => null
-                ]),
+            'sectors' => Organization::groupBy('sector')->select('sector')->get()
         ]);
     }
 
