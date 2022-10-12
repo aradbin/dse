@@ -142,7 +142,7 @@
 
 <script>
 import { usePage } from '@inertiajs/inertia-vue3';
-import { store } from '../../store'
+import { store } from '../store'
 export default {
   props: {
     organization: {}

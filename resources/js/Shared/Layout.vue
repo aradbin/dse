@@ -100,7 +100,7 @@ export default {
       fetch('/organizations/all')
         .then(response => response.json())
         .then(data => {
-          this.store.updateOrganizations(data)
+          this.store.updateOrganizations(data);
         })
     }
   },

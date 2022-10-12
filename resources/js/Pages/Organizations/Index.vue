@@ -49,9 +49,9 @@
       </Link> -->
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-      <card v-for="organization in organizationsArray" :key="organization.id" :organization="organization" />
+      <card v-for="organization in this.store.filteredOrganizations" :key="organization.id" :organization="organization" />
     </div>
-    <pagination class="mt-6" :links="organizations.links" />
+    <!-- <pagination class="mt-6" :links="organizations.links" /> -->
   </div>
 </template>
 
@@ -83,35 +83,38 @@ export default {
   data() {
     return {
       form: {
-        search: this.filters.search,
-        se_index: this.filters.se_index,
-        category: this.filters.category,
-        sector: this.filters.sector,
-        per_page: this.filters.per_page,
+        search: null,
+        se_index: null,
+        category: null,
+        sector: null,
+        per_page: 20,
+        page: 1,
         watchlist: false
       },
-      store,
-      organizationsArray: []
+      store
     }
   },
   watch: {
+    'store.organizations'(){
+      this.getDetails();
+    },
     form: {
       deep: true,
       handler: throttle(function () {
+        store.updateQuery(this.form)
         this.getDetails();
-      }, 100),
-    },
+      }, 150),
+    }
   },
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
     },
     async getDetails(updatePrice=false){
-      if(isUrl('watchlist')){
+      if(this.isUrl('watchlist')){
         form.watchlist = true;
       }
-      this.organizationsArray = this.store.filterOrganizations(this.form);
-      await Promise.all(this.organizationsArray.map((org, index, array) => {
+      await Promise.all(this.store.filteredOrganizations.map((org) => {
         if(updatePrice || !org.price){
           return fetch('/organizations/show/' + org.code)
             .then(response => response.json())
