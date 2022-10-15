@@ -19,6 +19,16 @@ class Portfolio extends Model
         return $this->belongsTo(Broker::class);
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function charges()
+    {
+        return $this->hasMany(Charge::class);
+    }
+
     public function trades()
     {
         return $this->hasMany(Trade::class);

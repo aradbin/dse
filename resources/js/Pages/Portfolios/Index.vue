@@ -1,165 +1,92 @@
 <template>
-    <div>
-      <Head title="Portfolio" />
-      <h1 class="mb-8 text-3xl font-bold">Portfolio</h1>
-      <div class="flex items-end justify-between mb-6">
-        <search-filter v-model="form.search" class="mr-4 w-full" @reset="reset">
-          <div class="w-1/5 mr-2">
-            <label class="block text-gray-700">Portfolio:</label>
-            <select v-model="form.per_page" class="form-select w-full mt-2">
-              <option v-for="portfolio in portfolios" :key="portfolio.id" :value="portfolio.id">{{portfolio.broker_user_id}}</option>
-            </select>
-          </div>
-          <div class="w-1/5 mr-2">
-            <label class="block text-gray-700">Index:</label>
-            <select v-model="form.se_index" class="form-select w-full mt-2">
-              <option :value="null">All</option>
-              <option value="DS30">DS30</option>
-            </select>
-          </div>
-          <div class="w-1/5 mr-2">
-            <label class="block text-gray-700">Category:</label>
-            <select v-model="form.category" class="form-select w-full mt-2">
-              <option :value="null">All</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="G">G</option>
-              <option value="N">N</option>
-              <option value="Z">Z</option>
-            </select>
-          </div>
-          <div class="w-1/5 mr-2">
-            <label class="block text-gray-700">Sector:</label>
-            <select v-model="form.sector" class="form-select w-full mt-2">
-              <option :value="null">All</option>
-              <option v-for="sector in sectors" :key="sector.sector" :value="sector.sector">{{ sector.sector }}</option>
-            </select>
-          </div>
-        </search-filter>
+  <div>
+    <Head title="Portfolio" />
+    <h1 class="mb-4 text-3xl font-bold">My Portfolio</h1>
+    <div class="flex items-end justify-between mb-6" v-if="this.store.portfolios.length > 0">
+      <div>
+        <!-- <label class="block text-gray-700">Portfolio:</label> -->
+        <select v-model="portfolio" class="form-select w-full" style="width: 250px">
+          <option v-for="portfolio in this.store.portfolios" :key="portfolio.id" :value="portfolio.id">{{portfolio.broker_user_id}}</option>
+        </select>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-        <card v-for="organization in organizationsArray" :key="organization.id" :organization="organization" />
+      <div>
+        <button class="btn-indigo" v-on:click="toggleModal()">Add Portfolio</button>
       </div>
-      <pagination class="mt-6" :links="organizations.links" />
     </div>
-  </template>
+    <div class="flex items-end justify-center mb-6" v-else>
+      <div class="flex flex-wrap items-end">
+        <div class="w-full flex mb-4">
+          <button class="btn-indigo" v-on:click="toggleModal()">Add Portfolio</button>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 mb-4">
+      <trades v-if="selectedPortfolio && selectedPortfolio.trades" :trades="selectedPortfolio.trades" />
+    </div>
+    <div class="flex flex-row">
+      <div class="w-1/2 mr-4">
+        <transactions v-if="selectedPortfolio && selectedPortfolio.transactions" :transactions="selectedPortfolio.transactions" />
+      </div>
+      <div class="w-1/2">
+        <charges v-if="selectedPortfolio && selectedPortfolio.charges" :charges="selectedPortfolio.charges" />
+      </div>
+    </div>
+    
+  </div>
+
+  <Form v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
+</template>
   
-  <script>
+<script>
   import { Head, Link } from '@inertiajs/inertia-vue3'
-  import Icon from '@/Shared/Icon'
-  import pickBy from 'lodash/pickBy'
   import Layout from '@/Shared/Layout'
-  import throttle from 'lodash/throttle'
-  import mapValues from 'lodash/mapValues'
-  import Pagination from '@/Shared/Pagination'
-  import SearchFilter from '@/Shared/SearchFilter'
-  import Card from '@/Shared/Card'
+  import { store } from '../../store'
+  import Form from "./Form";
+  import Transactions from "./Transactions";
+  import Charges from "./Charges";
+  import Trades from "./Trades";
   
   export default {
     components: {
       Head,
-      Icon,
       Link,
-      Pagination,
-      SearchFilter,
-      Card
+      Form,
+      Transactions,
+      Charges,
+      Trades
     },
     layout: Layout,
     props: {
       auth: Object,
-      filters: Object,
-      sectors: Array,
-      organizations: Object,
+      brokers: Array,
+      portfolios: Array
     },
     data() {
       return {
-        form: {
-          search: this.filters.search,
-          se_index: this.filters.se_index,
-          category: this.filters.category,
-          sector: this.filters.sector,
-          per_page: this.filters.per_page,
-        },
-        organizationsArray: [],
-        url: '/organizations'
+        portfolio: null,
+        selectedPortfolio: null,
+        store,
+        showModal: false
       }
     },
     watch: {
-      form: {
-        deep: true,
-        handler: throttle(function () {
-          this.$inertia.get(this.url, pickBy(this.form), {
-            preserveState: true,
-            onSuccess: () => {this.getDetails()}
-          })
-        }, 150),
+      portfolio(){
+        this.selectedPortfolio = this.store.portfolios.filter(item => item.id === this.portfolio)[0];
       },
     },
     methods: {
-      reset() {
-        this.form = mapValues(this.form, () => null)
+      toggleModal: function(){
+        this.showModal = !this.showModal;
       },
-      async getDetails(){
-        this.organizationsArray = this.organizations.data;
-        await Promise.all(this.organizations.data.map((org, index, array) => {
-          return fetch('/organizations/show/' + org.code)
-            .then(response => response.json())
-            .then(data => {
-              let total_dividend = 0;
-              let avg_dividend = 0;
-              let dividends = JSON.parse(org.dividends)
-              if(dividends?.length>0){
-                dividends.map(function(dividend){
-                  total_dividend = total_dividend + dividend.cash;
-                });
-                avg_dividend = (((total_dividend/dividends.length)/10)/data.LastTrade)*100;
-              }
-              this.organizationsArray[index] = {
-                'id' : org.id,
-                'code' : org.code,
-                'name' : data.FullName,
-                'category' : data.MarketCategory,
-                'sector' : org.sector,
-                'price' : data.LastTrade,
-                'eps' : data.EPS,
-                'pe' : data.AuditedPE,
-                'upe' : data.UnAuditedPE,
-                'pnav' : data.NavPrice,
-                'pepnav' : (data.AuditedPE * data.NavPrice).toFixed(2),
-                'upepnav' : (data.UnAuditedPE * data.NavPrice).toFixed(2),
-                'div' : data.DividentYield,
-                'agm' : data.LastAGMHeld,
-                'listingYear' : data.ListingYear,
-                'longLoan' : data.LongLoan,
-                'shortLoan' : data.ShortLoan,
-                'marketCap' : data.MarketCap,
-                'website' : data.Web,
-                'watchlisted' : org.watchlisted,
-                'dividends': dividends,
-                'avg_dividend': avg_dividend.toFixed(2)
-              }
-            })
-        }));
-      },
-      isUrl(...urls) {
-        let currentUrl = this.$page.url.substr(1)
-        if (urls[0] === '') {
-          return currentUrl === ''
+      updatePortfolios(){
+        this.store.updatePortfolios(this.portfolios);
+        if(!this.portfolio && this.store.portfolios.length > 0){
+          this.portfolio = this.store.portfolios[0].id;
         }
-        return urls.filter((url) => currentUrl.startsWith(url)).length
       }
     },
     mounted(){
-      if(this.isUrl('watchlist')){
-        this.url = '/watchlist';
-      }
-      this.getDetails();
-      window.setInterval(() => {
-        let d = new Date();
-        if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
-          this.getDetails();
-        }
-      }, 60000);
+      this.updatePortfolios()
     }
   }
-  </script>
+</script>

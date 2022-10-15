@@ -8,6 +8,7 @@ use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\PortfoliosController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,6 +62,10 @@ Route::get('watchlist', [UsersController::class, 'watchlist'])
 
 Route::get('portfolio', [PortfoliosController::class, 'index'])
     ->name('portfolio')
+    ->middleware('auth');
+
+Route::get('portfolio/all', [PortfoliosController::class, 'all'])
+    ->name('portfolio.all')
     ->middleware('auth');
 
 Route::post('portfolio', [PortfoliosController::class, 'store'])

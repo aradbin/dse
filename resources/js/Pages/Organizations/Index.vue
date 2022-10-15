@@ -98,7 +98,7 @@ export default {
     },
     form: {
       deep: true,
-      handler: throttle(function () {console.log(this.form)
+      handler: throttle(function () {
         store.updateQuery(this.form)
         this.getDetails();
       }, 150),

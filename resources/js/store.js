@@ -60,5 +60,9 @@ export const store = reactive({
       this.organizations[index].is_watch_listed = { 'organization_id': obj.id };
     }
     this.filterOrganizations(this.query);
+  },
+  portfolios: [],
+  updatePortfolios(arr){
+    this.portfolios = arr;
   }
 });
