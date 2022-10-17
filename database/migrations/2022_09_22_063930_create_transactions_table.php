@@ -19,7 +19,7 @@ class CreateTransactionsTable extends Migration
             $table->foreign('portfolio_id')->references('id')->on('portfolios');
             $table->string('name')->nullable();
             $table->boolean('type')->comment('1. Deposit, 2. Withdrawl, 3. Buy, 4. Sell, 5. BO Charge, 3. IPO Charge');
-            $table->integer('24u')->unsigned()->nullable();
+            $table->integer('organization_id')->unsigned()->nullable();
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->float('amount')->default(0);
             $table->float('quantity')->default(1);

@@ -19,18 +19,24 @@ class Portfolio extends Model
         return $this->belongsTo(Broker::class);
     }
 
-    public function transactions()
+    public function allTransactions()
     {
         return $this->hasMany(Transaction::class);
     }
 
-    public function charges()
+    public function transactions()
     {
-        return $this->hasMany(Charge::class);
+        return $this->allTransactions()->where(function($whereGroup){
+            $whereGroup->where('type','!=',3) // buy
+                ->where('type','!=',4) ; // sell
+        });
     }
 
     public function trades()
     {
-        return $this->hasMany(Trade::class);
+        return $this->allTransactions()->where(function($whereGroup){
+            $whereGroup->where('type',3) // buy
+                ->orWhere('type',4) ; // sell
+        });
     }
 }

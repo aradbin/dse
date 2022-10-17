@@ -16,25 +16,33 @@ class PortfoliosController extends Controller
     {
         return Inertia::render('Portfolios/Index', [
             'brokers' => Broker::select('id','name')->get(),
-            'portfolios' => Auth::user()->portfolios()->with('transactions', 'charges', 'trades')->get()
+            'portfolios' => Auth::user()->portfolios()->with('transactions','trades')->get()
         ]);
     }
 
     public function all()
     {
-        return Auth::user()->portfolios()->with('transactions', 'charges', 'trades')->get();
+        return Auth::user()->portfolios()->with('transactions','trades')->get();
     }
 
     public function store(Request $request)
     {
         $portfolio = Auth::user()->portfolios()->create(
             Request::validate([
+                'name' => ['required'],
                 'bo_account' => ['nullable', Rule::unique('portfolios')],
                 'broker_user_id' => ['required', Rule::unique('portfolios')],
-                'trading_charge' => ['required'],
+                'commission' => ['required'],
             ])
         );
 
+        // BO Charge
+        $portfolio->transactions()->create([
+            'type' => 5,
+            'amount' => 450
+        ]);
+
+        // Initial deposit
         $initial_deposit = 0;
         if(Request::get('initial_deposit') > 0){
             $initial_deposit = Request::get('initial_deposit');
@@ -43,12 +51,6 @@ class PortfoliosController extends Controller
                 'amount' => $initial_deposit
             ]);
         }
-
-        $portfolio->charges()->create([
-            'type' => 1,
-            'associate_id' => $portfolio->id,
-            'amount' => 450
-        ]);
 
         $portfolio->balance = $initial_deposit - 450;
         $portfolio->save();

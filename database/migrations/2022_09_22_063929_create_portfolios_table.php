@@ -17,6 +17,7 @@ class CreatePortfoliosTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->string('name')->nullable();
             $table->string('bo_account')->nullable();
             $table->integer('broker_id')->unsigned()->nullable();
             $table->foreign('broker_id')->references('id')->on('brokers');

@@ -6,7 +6,7 @@
       <div>
         <!-- <label class="block text-gray-700">Portfolio:</label> -->
         <select v-model="portfolio" class="form-select w-full" style="width: 250px">
-          <option v-for="portfolio in this.store.portfolios" :key="portfolio.id" :value="portfolio.id">{{portfolio.broker_user_id}}</option>
+          <option v-for="portfolio in this.store.portfolios" :key="portfolio.id" :value="portfolio.id">{{portfolio.name}}</option>
         </select>
       </div>
       <div>
@@ -23,15 +23,9 @@
     <div class="mt-4 mb-4">
       <trades v-if="selectedPortfolio && selectedPortfolio.trades" :trades="selectedPortfolio.trades" />
     </div>
-    <div class="flex flex-row">
-      <div class="w-1/2 mr-4">
-        <transactions v-if="selectedPortfolio && selectedPortfolio.transactions" :transactions="selectedPortfolio.transactions" />
-      </div>
-      <div class="w-1/2">
-        <charges v-if="selectedPortfolio && selectedPortfolio.charges" :charges="selectedPortfolio.charges" />
-      </div>
-    </div>
-    
+    <div class="mt-4 mb-4">
+      <transactions v-if="selectedPortfolio && selectedPortfolio.transactions" :transactions="selectedPortfolio.transactions" />
+    </div>    
   </div>
 
   <Form v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
@@ -43,7 +37,6 @@
   import { store } from '../../store'
   import Form from "./Form";
   import Transactions from "./Transactions";
-  import Charges from "./Charges";
   import Trades from "./Trades";
   
   export default {
@@ -52,7 +45,6 @@
       Link,
       Form,
       Transactions,
-      Charges,
       Trades
     },
     layout: Layout,
