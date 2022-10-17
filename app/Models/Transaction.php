@@ -13,4 +13,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(Portfolio::class);
     }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
 }
