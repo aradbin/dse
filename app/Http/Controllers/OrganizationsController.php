@@ -23,12 +23,18 @@ class OrganizationsController extends Controller
 
     public function all()
     {
+        $query = Organization::where('organizations.account_id',1)
+            ->orderBy('organizations.code')
+            ->select('organizations.id','organizations.code','organizations.category','organizations.sector');
+        if(Auth::user()){
+            $query->with('dividends','isWatchListed');
+        }else{
+            $query->with('dividends');
+        }
+        $organizations = $query->get();
+        
         return [
-            'organizations' => Organization::where('organizations.account_id',1)
-                ->with('dividends','isWatchListed')
-                ->orderBy('organizations.code')
-                ->select('organizations.id','organizations.code','organizations.category','organizations.sector')
-                ->get(),
+            'organizations' => $organizations,
             'sectors' => Organization::groupBy('sector')->select('sector')->get()
         ];
     }
@@ -124,6 +130,7 @@ class OrganizationsController extends Controller
 
     public function sync()
     {
+        set_time_limit(0);
         // // DSEX
         // $ch = curl_init("https://www.dsebd.org/dseX_share.php");
         // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

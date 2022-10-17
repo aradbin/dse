@@ -24,7 +24,7 @@ class CreatePortfoliosTable extends Migration
             $table->string('broker_user_id')->nullable();
             // $table->integer('account_id')->unsigned();
             // $table->foreign('account_id')->references('id')->on('accounts');
-            $table->float('trading_charge')->default(0.5)->comment('in percentage');
+            $table->float('commission')->default(0.5)->comment('in percentage');
             $table->float('balance')->default(0);
             $table->timestamps();
             $table->softDeletes();

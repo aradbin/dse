@@ -57,6 +57,7 @@ export default {
             // preserveScroll: true,
             onSuccess: () => {
                 this.$emit('toggleModal');
+                this.$emit('updatePortfolios');
             },
         });
       }

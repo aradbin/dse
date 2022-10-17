@@ -23,7 +23,7 @@
     <div class="mt-4 mb-4">
       <trades v-if="selectedPortfolio && selectedPortfolio.trades" :trades="selectedPortfolio.trades" />
     </div>
-    <div class="mt-4 mb-4">
+    <div class="mt-8 mb-4">
       <transactions v-if="selectedPortfolio && selectedPortfolio.transactions" :transactions="selectedPortfolio.transactions" />
     </div>    
   </div>

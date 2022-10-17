@@ -8,7 +8,7 @@
         <th class="pb-4 pt-6 px-6">Date</th>
       </tr>
       <tr v-for="item in transactions" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
-        <td class="border-t px-6 py-4">{{ item.type===1 ? 'Deposit' : 'Withdrawl' }}</td>
+        <td class="border-t px-6 py-4">{{ item.type===1 ? 'Deposit' : (item.type===2 ? 'Withdrawl' : (item.type===3 ? 'Buy' : (item.type===4 ? 'Sell' : (item.type===5 ? 'BO Charge' : 'IPO Charge')))) }}</td>
         <td class="border-t px-6 py-4">{{ item.amount }}</td>
         <td class="border-t px-6 py-4">{{ item.created_at }}</td>
       </tr>
