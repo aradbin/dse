@@ -39,7 +39,6 @@ class RegisterController extends Controller
         ]);
 
         User::create([
-            'account_id' => 1,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,

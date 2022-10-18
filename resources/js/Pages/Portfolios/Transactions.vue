@@ -1,5 +1,9 @@
 <template>
   <h1 class="mb-4 text-l font-bold">Transactions</h1>
+  <div class="flex items-end justify-end mb-6">
+    <button class="btn-success mr-2" v-on:click="toggleModal()">Deposit</button>
+    <button class="btn-danger" v-on:click="toggleModal()">Withdrawl</button>
+  </div>
   <div class="bg-white rounded-md shadow overflow-x-auto">
     <table class="w-full whitespace-nowrap">
       <tr class="text-left font-bold">
