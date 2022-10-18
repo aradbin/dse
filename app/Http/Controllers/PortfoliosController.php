@@ -62,8 +62,10 @@ class PortfoliosController extends Controller
     {
         $portfolio->update(
             Request::validate([
-                'broker_user_id' => ['required'],
-                'trading_charge' => ['required'],
+                'name' => ['required'],
+                'bo_account' => ['nullable', Rule::unique('portfolios')],
+                'broker_user_id' => ['required', Rule::unique('portfolios')],
+                'commission' => ['required'],
             ])
         );
 

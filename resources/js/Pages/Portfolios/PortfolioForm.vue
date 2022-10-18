@@ -1,7 +1,7 @@
 <template>
   <!-- Portfolio Form Modal -->
   <div class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex flex-wrap">
-    <form class="bg-white rounded-lg shadow-xl overflow-hidden" @submit.prevent="submitPortfolio" style="width: 450px">
+    <form class="bg-white rounded-lg shadow-xl overflow-hidden" @submit.prevent="submitForm" style="width: 450px">
         <div class="px-6 py-8">
             <h3 class="text-center text-xl font-semibold">Add New Portfolio</h3>
             <div class="mt-2 mx-auto w-24 border-b-2" />
@@ -52,7 +52,7 @@ export default {
     },
     emits: ['toggleModal','updatePortfolios'],
     methods: {
-      submitPortfolio(){
+      submitForm(){
         this.form.post('/portfolio', {
             // preserveScroll: true,
             onSuccess: () => {

@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
 
 export const store = reactive({
+  // Organizations
   organizations: [],
   filteredOrganizations: [],
   sectors: [],
@@ -61,6 +62,8 @@ export const store = reactive({
     }
     this.filterOrganizations(this.query);
   },
+
+  // Portfolio
   portfolios: [],
   updatePortfolios(arr){
     this.portfolios = arr;

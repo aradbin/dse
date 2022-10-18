@@ -20,22 +20,28 @@
         </div>
       </div>
     </div>
+    <div class="flex items-end justify-end mb-6">
+      <button class="btn-success mr-2" v-on:click="toggleTransactionModal(1)">Deposit</button>
+      <button class="btn-danger" v-on:click="toggleTransactionModal(2)">Withdrawl</button>
+    </div>
     <div class="mt-4 mb-4">
-      <trades v-if="selectedPortfolio && selectedPortfolio.trades" :trades="selectedPortfolio.trades" />
+      <Trades v-if="selectedPortfolio && selectedPortfolio.trades" :trades="selectedPortfolio.trades" />
     </div>
     <div class="mt-8 mb-4">
-      <transactions v-if="selectedPortfolio && selectedPortfolio.transactions" :transactions="selectedPortfolio.transactions" />
-    </div>    
+      <Transactions v-if="selectedPortfolio && selectedPortfolio.transactions" :transactions="selectedPortfolio.transactions" />
+    </div>
   </div>
 
-  <Form v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
+  <PortfolioForm v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
+  <TransactionForm v-if="showTransactionModal" :type="type" :portfolio="portfolio" @toggleModal="toggleTransactionModal" @updatePortfolios="updatePortfolios" />
 </template>
   
 <script>
   import { Head, Link } from '@inertiajs/inertia-vue3'
   import Layout from '@/Shared/Layout'
   import { store } from '../../store'
-  import Form from "./Form";
+  import PortfolioForm from "./PortfolioForm";
+  import TransactionForm from "./TransactionForm";
   import Transactions from "./Transactions";
   import Trades from "./Trades";
   
@@ -43,7 +49,8 @@
     components: {
       Head,
       Link,
-      Form,
+      PortfolioForm,
+      TransactionForm,
       Transactions,
       Trades
     },
@@ -58,7 +65,9 @@
         portfolio: null,
         selectedPortfolio: null,
         store,
-        showModal: false
+        showModal: false,
+        showTransactionModal: false,
+        type: 1
       }
     },
     watch: {
@@ -69,6 +78,10 @@
     methods: {
       toggleModal: function(){
         this.showModal = !this.showModal;
+      },
+      toggleTransactionModal: function(type=null){
+        this.type = type;
+        this.showTransactionModal = !this.showTransactionModal;
       },
       updatePortfolios(){
         this.store.updatePortfolios(this.portfolios);
