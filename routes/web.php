@@ -72,6 +72,10 @@ Route::post('portfolio', [PortfoliosController::class, 'store'])
     ->name('portfolio.store')
     ->middleware('auth');
 
+Route::get('portfolio/{id}', [PortfoliosController::class, 'show'])
+    ->name('portfolio.show');
+    ->middleware('auth');
+
 // Transactions
 
 Route::post('transactions', [TransactionsController::class, 'store'])

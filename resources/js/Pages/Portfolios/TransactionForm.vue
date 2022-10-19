@@ -6,14 +6,12 @@
             <h3 class="text-center text-xl font-semibold">{{ getTransactionType(type) }}</h3>
             <div class="mt-2 mx-auto w-24 border-b-2" />
             <text-input v-model="form.type" :error="form.errors.type" class="mt-4" label="Transaction Type" type="hidden" autocapitalize="off" />
-            <select-input v-model="form.portfolio_id" :error="form.errors.portfolio_id" class="mt-6" label="Portfolio">
-                <option v-for="portfolio in store.portfolios" :key="portfolio.id" :value="portfolio.id">{{ portfolio.name }}</option>
-            </select-input>
+            <text-input v-model="form.portfolio_id" :error="form.errors.portfolio_id" class="mt-4" label="Portfolio" type="hidden" autocapitalize="off" />
             
             <select-input v-if="type===3 || type===4 || type===7" v-model="form.organization_id" :error="form.errors.organization_id" class="mt-6" label="Stock">
-                <option v-for="org in store.organizations" :key="org.id" :value="org.id">{{ org.code }}</option>
+                <option v-for="org in store.organizations" :key="org.id" :value="org.id">{{ org.code }} ({{ org.name }})</option>
             </select-input>
-            <text-input v-model="form.amount" :error="form.errors.amount" class="mt-4" label="{{ (type===3 || type===4) ? "Price" : "Amount" }}" type="number" step=".01" autocapitalize="off" />
+            <text-input v-model="form.amount" :error="form.errors.amount" class="mt-4" :label="(type===3 || type===4) ? 'Price (Per share)' : 'Amount'" type="number" step=".01" autocapitalize="off" />
             <text-input v-if="type===3 || type===4" v-model="form.quantity" :error="form.errors.quantity" class="mt-4" label="Quantity" type="number" autocapitalize="off" />
             <text-input v-if="type===1 || type===2 || type===6" v-model="form.name" :error="form.errors.name" class="mt-4" label="Remarks" type="text" autocapitalize="off" />
         </div>

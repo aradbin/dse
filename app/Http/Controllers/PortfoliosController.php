@@ -16,13 +16,13 @@ class PortfoliosController extends Controller
     {
         return Inertia::render('Portfolios/Index', [
             'brokers' => Broker::select('id','name')->get(),
-            'portfolios' => Auth::user()->portfolios()->with('transactions','trades')->get()
+            'portfolios' => Auth::user()->portfolios()->with('organizations')->get()
         ]);
     }
 
     public function all()
     {
-        return Auth::user()->portfolios()->with('transactions','trades')->get();
+        return Auth::user()->portfolios()->with('organizations')->get();
     }
 
     public function store(Request $request)
@@ -31,7 +31,7 @@ class PortfoliosController extends Controller
             Request::validate([
                 'name' => ['required'],
                 'bo_account' => ['nullable', Rule::unique('portfolios')],
-                'broker_user_id' => ['required', Rule::unique('portfolios')],
+                'broker_user_id' => ['nullable', Rule::unique('portfolios')],
                 'commission' => ['required'],
             ])
         );
@@ -55,7 +55,23 @@ class PortfoliosController extends Controller
         $portfolio->balance = $initial_deposit - 450;
         $portfolio->save();
 
-        return Redirect::route('portfolio')->with('success', 'Portfolio created');
+        return Redirect::route('portfolio/'.$portfolio->id)->with('success', 'Portfolio created');
+    }
+
+    public function show($id)
+    {
+        $portfolio = Auth::user()->portfolios()->with('organizations', 'transactions')->find($id);
+
+        if($portfolio){
+            $brokers => Broker::select('id','name')->get();
+
+            return Inertia::render('Portfolios/Portfolio', [
+                'brokers' => $brokers,
+                'portfolio' => $portfolio
+            ]);
+        }
+
+        return Redirect::route('portfolio')->with('error', 'Portfolio not found');
     }
 
     public function update(Portfolio $portfolio)

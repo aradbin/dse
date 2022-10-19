@@ -67,5 +67,9 @@ export const store = reactive({
   portfolios: [],
   updatePortfolios(arr){
     this.portfolios = arr;
-  }
+  },
+  updatePortfolio(obj){
+    const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
+    this.portfolios[index] = obj;
+  },
 });

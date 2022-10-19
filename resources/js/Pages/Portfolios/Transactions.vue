@@ -1,5 +1,9 @@
 <template>
-  <h1 class="mb-4 text-l font-bold">Transactions</h1>
+  <h1 class="mb-4 text-l font-bold">
+    Transactions
+    <button class="btn-success float-right mr-2" @click="$emit('toggleModal',1)">Deposit</button>
+    <button class="btn-danger float-right" @click="$emit('toggleModal',2)">Withdraw</button>
+  </h1>
   <div class="bg-white rounded-md shadow overflow-x-auto">
     <table class="w-full whitespace-nowrap">
       <tr class="text-left font-bold">
@@ -23,6 +27,7 @@
 import { getTransactionType } from "../../Helpers/string";
 
 export default {
+  emits: ['toggleModal'],
   props: {
       transactions: Array
   }
