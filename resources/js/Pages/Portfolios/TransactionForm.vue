@@ -5,11 +5,10 @@
         <div class="px-6 py-8">
             <h3 class="text-center text-xl font-semibold">{{ getTransactionType(type) }}</h3>
             <div class="mt-2 mx-auto w-24 border-b-2" />
-            <text-input v-model="form.type" :error="form.errors.type" class="mt-4" label="Transaction Type" type="hidden" autocapitalize="off" />
-            <text-input v-model="form.portfolio_id" :error="form.errors.portfolio_id" class="mt-4" label="Portfolio" type="hidden" autocapitalize="off" />
-            
+            <text-input v-model="form.type" :error="form.errors.type" class="mt-4" label="" type="hidden" autocapitalize="off" />
+            <text-input v-model="form.portfolio_id" :error="form.errors.portfolio_id" class="mt-4" label="" type="hidden" autocapitalize="off" />
             <select-input v-if="type===3 || type===4 || type===7" v-model="form.organization_id" :error="form.errors.organization_id" class="mt-6" label="Stock">
-                <option v-for="org in store.organizations" :key="org.id" :value="org.id">{{ org.code }} ({{ org.name }})</option>
+                <option v-for="org in store.organizations" :key="org.id" :value="org.id">{{ org.code }}</option>
             </select-input>
             <text-input v-model="form.amount" :error="form.errors.amount" class="mt-4" :label="(type===3 || type===4) ? 'Price (Per share)' : 'Amount'" type="number" step=".01" autocapitalize="off" />
             <text-input v-if="type===3 || type===4" v-model="form.quantity" :error="form.errors.quantity" class="mt-4" label="Quantity" type="number" autocapitalize="off" />
@@ -29,7 +28,7 @@ import TextInput from '@/Shared/TextInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from '@/Shared/SelectInput'
 import { store } from '../../store'
-import { getTransactionType } from "../../Helpers/string"
+import getTransactionTypeString from "../../Helpers/string"
 
 export default {
     components: {
@@ -57,6 +56,9 @@ export default {
     },
     emits: ['toggleModal','updatePortfolios'],
     methods: {
+      getTransactionType(type){
+        return getTransactionTypeString(type);
+      },
       submitForm(){
         this.form.post('/transactions', {
             // preserveScroll: true,
@@ -68,7 +70,7 @@ export default {
       }
     },
     mounted(){
-        
+      
     }
 }
 </script>

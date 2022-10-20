@@ -25,6 +25,7 @@
       Head,
       Link,
       PortfolioForm,
+      Portfolios
     },
     layout: Layout,
     props: {

@@ -9,6 +9,7 @@ use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\PortfoliosController;
+use App\Http\Controllers\TransactionsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,7 +74,7 @@ Route::post('portfolio', [PortfoliosController::class, 'store'])
     ->middleware('auth');
 
 Route::get('portfolio/{id}', [PortfoliosController::class, 'show'])
-    ->name('portfolio.show');
+    ->name('portfolio.show')
     ->middleware('auth');
 
 // Transactions

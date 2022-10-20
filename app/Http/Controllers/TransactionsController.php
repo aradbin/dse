@@ -16,13 +16,10 @@ class TransactionsController extends Controller
     {
         $validator = Request::validate([
             'type' => ['required'],
+            'organization_id' => [Rule::when(Request::get('type') === 3 || Request::get('type') === 4, ['required'])],
             'amount' => ['required'],
-            'organization_id' => [Rule::when($this->type === 3 || $this->type === 4, ['required'])]
+            'quantity' => [Rule::when(Request::get('type') === 3 || Request::get('type') === 4, ['required'])],
         ]);
-
-        if(!$validator->fails()){
-            return Redirect::back()->withErrors($validator);
-        }
 
         $portfolio = Auth::user()->portfolios()->find(Request::get('portfolio_id'));
 
@@ -76,8 +73,13 @@ class TransactionsController extends Controller
             }
 
             $transaction = $portfolio->transactions()->create([
-                'type' => ['required'],
-                'amount' => ['required']
+                'name' => Request::get('name'),
+                'type' => Request::get('type'),
+                'organization_id' => Request::get('organization_id'),
+                'amount' => Request::get('amount'),
+                'quantity' => Request::get('quantity'),
+                'commission' => $commission,
+                'tax' => 0,
             ]);
 
             $portfolio->balance = $portfolio->balance + $balanceAdjustment;

@@ -23,7 +23,6 @@
   import { store } from '../../store'
   import PortfolioForm from "./PortfolioForm";
   import TransactionForm from "./TransactionForm";
-  import Portfolios from "./Portfolios";
   import Transactions from "./Transactions";
   import Organizations from "./Organizations";
   

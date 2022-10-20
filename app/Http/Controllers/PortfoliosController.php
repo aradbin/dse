@@ -55,7 +55,7 @@ class PortfoliosController extends Controller
         $portfolio->balance = $initial_deposit - 450;
         $portfolio->save();
 
-        return Redirect::route('portfolio/'.$portfolio->id)->with('success', 'Portfolio created');
+        return Redirect::route('portfolio.show',$portfolio->id)->with('success', 'Portfolio created');
     }
 
     public function show($id)
@@ -63,7 +63,7 @@ class PortfoliosController extends Controller
         $portfolio = Auth::user()->portfolios()->with('organizations', 'transactions')->find($id);
 
         if($portfolio){
-            $brokers => Broker::select('id','name')->get();
+            $brokers = Broker::select('id','name')->get();
 
             return Inertia::render('Portfolios/Portfolio', [
                 'brokers' => $brokers,

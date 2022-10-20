@@ -1,4 +1,4 @@
-export const getTransactionType = (type) => {
+const getTransactionTypeString = (type) => {
     let string = '';
 
     if(type===1){
@@ -19,3 +19,5 @@ export const getTransactionType = (type) => {
 
     return string;
 }
+
+export default getTransactionTypeString;

@@ -17,7 +17,7 @@
 
     <script src="{{ mix('/js/app.js') }}" defer></script>
     @inertiaHead
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1085202618710427" crossorigin="anonymous"></script>
+    {{-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1085202618710427" crossorigin="anonymous"></script> --}}
 </head>
 <body class="font-sans leading-none text-gray-700 antialiased">
     @inertia

@@ -18,7 +18,7 @@
         <td class="border-t px-6 py-4">{{ item.broker_user_id }}</td>
         <td class="border-t px-6 py-4">{{ item.commission }} %</td>
         <td class="border-t px-6 py-4">{{ item.balance }}</td>
-        <td class="border-t px-6 py-4"><Link class="btn-indigo float-right" href="/portfolio/{{ item.id }}">Details</Link></td>
+        <td class="border-t px-6 py-4"><Link class="btn-indigo px-4 py-2" :href="'/portfolio/'+item.id">Details</Link></td>
       </tr>
       <tr v-if="portfolios?.length === 0">
         <td class="border-t px-6 py-4 text-center" colspan="3">No portfolios found</td>
