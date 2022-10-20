@@ -14,7 +14,7 @@
   </div>
 
   <PortfolioForm v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
-  <TransactionForm v-if="showTransactionModal" :type="type" :portfolio="portfolio.id" @toggleModal="toggleTransactionModal" @updatePortfolios="updatePortfolios" />
+  <TransactionForm v-if="showTransactionModal" :type="type" :organization_id="organization_id" :portfolio="portfolio" @toggleModal="toggleTransactionModal" @updatePortfolios="updatePortfolios" />
 </template>
   
 <script>
@@ -44,20 +44,20 @@
         store,
         showModal: false,
         showTransactionModal: false,
-        type: 1
+        type: 1,
+        organization_id: null
       }
     },
     watch: {
-      // portfolio(){
-      //   this.selectedPortfolio = this.store.portfolios.filter(item => item.id === this.portfolio)[0];
-      // },
+
     },
     methods: {
       toggleModal: function(){
         this.showModal = !this.showModal;
       },
-      toggleTransactionModal: function(type){
+      toggleTransactionModal: function(type,organization_id=null){
         this.type = type;
+        this.organization_id = organization_id;
         this.showTransactionModal = !this.showTransactionModal;
       },
       updatePortfolios(){

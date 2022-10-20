@@ -14,32 +14,33 @@ class TransactionsController extends Controller
 {
     public function store(Request $request)
     {
-        $validator = Request::validate([
-            'type' => ['required'],
-            'organization_id' => [Rule::when(Request::get('type') === 3 || Request::get('type') === 4, ['required'])],
-            'amount' => ['required'],
-            'quantity' => [Rule::when(Request::get('type') === 3 || Request::get('type') === 4, ['required'])],
-        ]);
-
         $portfolio = Auth::user()->portfolios()->find(Request::get('portfolio_id'));
 
         if($portfolio){
+            Request::validate([
+                'type' => ['required'],
+                'organization_id' => [Rule::when(Request::get('type') === 3 || Request::get('type') === 4, ['required'])],
+                'amount' => ['required', 'min:0', Rule::when(Request::get('type') === 2 && Request::get('amount') <= $portfolio->balance, ['balance'])],
+                'quantity' => ['required', 'min:1'],
+            ],[
+                'amount.balance' => 'Insufficient balance'
+            ]);
+            
             $balanceAdjustment = 0;
             $commission = 0;
+            $cost = Request::get('amount') * Request::get('quantity');
 
-            if(Request::get('type')==1){
+            if(Request::get('type')==1){ // Deposit
                 $balanceAdjustment = Request::get('amount');
-            }else if(Request::get('type')==2){
-                if($portfolio->balance < Request::get('amount')){
-                    return Redirect::back()->with('error', 'Insufficient balance');
-                }
+            }else if(Request::get('type')==2){ // Withdraw
                 $balanceAdjustment = 0 - Request::get('amount');
-            }else if(Request::get('type')==3){
+            }else if(Request::get('type')==3){ // Buy
                 $commission = (Request::get('amount') * Request::get('quantity')) * ($portfolio->commission / 100);
-                $cost = Request::get('amount') * Request::get('quantity');
-                if($portfolio->balance < ($cost + $commission)){
-                    return Redirect::back()->with('error', 'Insufficient balance');
-                }
+                Request::validate([
+                    'amount' => [Rule::when($portfolio->balance >= ($cost + $commission), ['balance'])],
+                ],[
+                    'amount.balance' => 'Insufficient balance'
+                ]);
                 $balanceAdjustment = 0 - ($cost + $commission);
                 $organization = $portfolio->organizations()->find(Request::get('organization_id'));
                 if($organization){
@@ -53,22 +54,24 @@ class TransactionsController extends Controller
                         'quantity' => Request::get('quantity')
                     ]);
                 }
-            }else if(Request::get('type')==4){
-                $commission = (Request::get('amount') * Request::get('quantity')) * ($portfolio->commission / 100);
-                $cost = Request::get('amount') * Request::get('quantity');
-                $balanceAdjustment = $cost - $commission;
+            }else if(Request::get('type')==4){ // Sell
                 $organization = $portfolio->organizations()->find(Request::get('organization_id'));
-                if($organization && $organization->quantity >= Request::get('quantity')){
-                    $organization->quantity = $organization->quantity - Request::get('quantity');
-                    $organization->save();
-                }else{
-                    return Redirect::back()->with('error', 'Insufficient quantity');
-                }
-            }else if(Request::get('type')==5){
+                Request::validate([
+                    'organization' => [Rule::when($organization, ['portfolio'])],
+                    'quantity' => [Rule::when($organization && $organization->quantity >= Request::get('quantity'), ['portfolio'])]
+                ],[
+                    'organization.portfolio' => "Organization doesn't exist on your portfolio",
+                    'quantity.portfolio' => "Insufficient quantity to sell",
+                ]);
+                $commission = (Request::get('amount') * Request::get('quantity')) * ($portfolio->commission / 100);
+                $balanceAdjustment = $cost - $commission;
+                $organization->quantity = $organization->quantity - Request::get('quantity');
+                $organization->save();
+            }else if(Request::get('type')==5){ // BO Charge
                 $balanceAdjustment = 0 - Request::get('amount');
-            }else if(Request::get('type')==6){
+            }else if(Request::get('type')==6){ // IPO Charge
                 $balanceAdjustment = 0 - Request::get('amount');
-            }else if(Request::get('type')==7){
+            }else if(Request::get('type')==7){ // Cash Dividend
                 $balanceAdjustment = Request::get('amount') - Request::get('tax');
             }
 
@@ -84,8 +87,10 @@ class TransactionsController extends Controller
 
             $portfolio->balance = $portfolio->balance + $balanceAdjustment;
             $portfolio->save();
+
+            return Redirect::back()->with('success', 'Transaction created');
         }
 
-        return Redirect::back()->with('success', 'Transaction created');
+        return Redirect::route('portfolio')->with('error', 'Portfolio not found');
     }
 }
