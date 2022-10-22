@@ -1,8 +1,8 @@
 <template>
-  <h1 class="mb-4 text-l font-bold">
+  <h1 class="mb-8 text-l font-bold">
     Organizations
-    <button class="btn-success float-right mr-2" @click="$emit('toggleModal',3)">Buy</button>
-    <button class="btn-danger float-right" @click="$emit('toggleModal',4)">Sell</button>
+    <button class="btn-success float-right" @click="$emit('toggleModal',3)">Buy</button>
+    <!-- <button class="btn-danger float-right" @click="$emit('toggleModal',4)">Sell</button> -->
   </h1>
   <div class="bg-white rounded-md shadow overflow-x-auto w-full">
     <table class="w-full whitespace-nowrap">
@@ -18,17 +18,17 @@
         <th class="pb-4 pt-6 px-6">Action</th>
       </tr>
       <tr v-for="item in organizations" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
-        <td class="border-t px-6 py-4">{{ item.organization_id }}</td>
+        <td class="border-t px-6 py-4">{{ item.organization.code }}</td>
         <td class="border-t px-6 py-4">{{ item.quantity }}</td>
         <td class="border-t px-6 py-4">{{ item.amount }}</td>
         <td class="border-t px-6 py-4">{{ item.amount * item.quantity }}</td>
         <td class="border-t px-6 py-4"></td>
         <td class="border-t px-6 py-4"></td>
         <td class="border-t px-6 py-4"></td>
-        <td class="border-t px-6 py-4">%</td>
+        <td class="border-t px-6 py-4"></td>
         <td class="border-t px-6 py-4">
-          <button class="btn-success float-right px-4 py-2 mr-2" @click="$emit('toggleModal',3,item.id)">Buy More</button>
-          <button class="btn-danger float-right px-4 py-2" @click="$emit('toggleModal',4),item.id">Sell</button>
+          <button class="btn-success px-4 py-2 mr-2" @click="$emit('toggleModal',3,item.organization_id)">Buy More</button>
+          <button class="btn-danger px-4 py-2" @click="$emit('toggleModal',4,item.organization_id)">Sell</button>
         </td>
       </tr>
       <tr v-if="organizations?.length === 0">

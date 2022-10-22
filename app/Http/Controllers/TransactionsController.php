@@ -19,11 +19,11 @@ class TransactionsController extends Controller
         if($portfolio){
             Request::validate([
                 'type' => ['required'],
-                'organization_id' => [Rule::when(Request::get('type') === 3 || Request::get('type') === 4, ['required'])],
-                'amount' => ['required', 'min:0', Rule::when(Request::get('type') === 2 && Request::get('amount') <= $portfolio->balance, ['balance'])],
-                'quantity' => ['required', 'min:1'],
+                'organization_id' => [Rule::when(Request::get('type') == 3 || Request::get('type') == 4, ['required'])],
+                'amount' => ['required', 'numeric', 'min:1', Rule::when(Request::get('type') == 2, ["max:$portfolio->balance"])],
+                'quantity' => ['required', 'numeric', 'min:1'],
             ],[
-                'amount.balance' => 'Insufficient balance'
+                'amount.max' => 'Insufficient balance'
             ]);
             
             $balanceAdjustment = 0;
@@ -37,9 +37,9 @@ class TransactionsController extends Controller
             }else if(Request::get('type')==3){ // Buy
                 $commission = (Request::get('amount') * Request::get('quantity')) * ($portfolio->commission / 100);
                 Request::validate([
-                    'amount' => [Rule::when($portfolio->balance >= ($cost + $commission), ['balance'])],
+                    'amount' => ['numeric', Rule::when($portfolio->balance < ($cost + $commission), ['max:0'])],
                 ],[
-                    'amount.balance' => 'Insufficient balance'
+                    'amount.max' => 'Insufficient balance'
                 ]);
                 $balanceAdjustment = 0 - ($cost + $commission);
                 $organization = $portfolio->organizations()->find(Request::get('organization_id'));
@@ -57,11 +57,11 @@ class TransactionsController extends Controller
             }else if(Request::get('type')==4){ // Sell
                 $organization = $portfolio->organizations()->find(Request::get('organization_id'));
                 Request::validate([
-                    'organization' => [Rule::when($organization, ['portfolio'])],
-                    'quantity' => [Rule::when($organization && $organization->quantity >= Request::get('quantity'), ['portfolio'])]
+                    'organization' => ['numeric', Rule::when(!$organization, ['max:0'])],
+                    'quantity' => ['numeric', Rule::when($organization, ["max:$organization->quantity"])]
                 ],[
-                    'organization.portfolio' => "Organization doesn't exist on your portfolio",
-                    'quantity.portfolio' => "Insufficient quantity to sell",
+                    'organization.max' => "Organization doesn't exist on your portfolio",
+                    'quantity.max' => "Insufficient quantity to sell",
                 ]);
                 $commission = (Request::get('amount') * Request::get('quantity')) * ($portfolio->commission / 100);
                 $balanceAdjustment = $cost - $commission;

@@ -60,7 +60,7 @@ class PortfoliosController extends Controller
 
     public function show($id)
     {
-        $portfolio = Auth::user()->portfolios()->with('organizations', 'transactions')->find($id);
+        $portfolio = Auth::user()->portfolios()->with('organizations.organization', 'transactions')->find($id);
 
         if($portfolio){
             $brokers = Broker::select('id','name')->get();
