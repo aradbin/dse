@@ -22,13 +22,27 @@ class Organization extends Model
 
     public function watchlist()
     {
-        return $this->belongsTo(Watchlist::class, 'id', 'organization_id');
+        return $this->hasMany(Watchlist::class);
     }
 
     public function isWatchListed()
     {
         if(Auth::user()){
             return $this->watchlist()->where('user_id',Auth::user()->id);
+        }
+        
+        return null;
+    }
+
+    public function portfolioOrganization()
+    {
+        return $this->hasMany(PortfolioOrganization::class);
+    }
+
+    public function isPortfolio()
+    {
+        if(Auth::user()){
+            return $this->portfolioOrganization()->portfolio()->where('user_id',Auth::user()->id);
         }
         
         return null;

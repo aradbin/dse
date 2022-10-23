@@ -60,8 +60,9 @@
         this.organization_id = organization_id;
         this.showTransactionModal = !this.showTransactionModal;
       },
-      updatePortfolios(){
+      updatePortfolios(updatePrice=false){
         this.store.updatePortfolio(this.portfolio);
+        this.store.getOrganizationDetails(this.portfolio.organizations,updatePrice);
       }
     },
     mounted(){

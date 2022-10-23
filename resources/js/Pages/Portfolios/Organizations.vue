@@ -22,10 +22,10 @@
         <td class="border-t px-6 py-4">{{ item.quantity }}</td>
         <td class="border-t px-6 py-4">{{ item.amount }}</td>
         <td class="border-t px-6 py-4">{{ item.amount * item.quantity }}</td>
-        <td class="border-t px-6 py-4"></td>
-        <td class="border-t px-6 py-4"></td>
-        <td class="border-t px-6 py-4"></td>
-        <td class="border-t px-6 py-4"></td>
+        <td class="border-t px-6 py-4">{{ store.getOrganization(item.organization.code).price }}</td>
+        <td class="border-t px-6 py-4">{{ store.getOrganization(item.organization.code).price * item.quantity }}</td>
+        <td class="border-t px-6 py-4">{{ (item.amount * item.quantity) - (store.getOrganization(item.organization.code).price * item.quantity) }}</td>
+        <td class="border-t px-6 py-4">{{ ((item.amount * item.quantity) - (store.getOrganization(item.organization.code).price * item.quantity)) / (item.amount * item.quantity) * 100 }}</td>
         <td class="border-t px-6 py-4">
           <button class="btn-success px-4 py-2 mr-2" @click="$emit('toggleModal',3,item.organization_id)">Buy More</button>
           <button class="btn-danger px-4 py-2" @click="$emit('toggleModal',4,item.organization_id)">Sell</button>
@@ -39,10 +39,17 @@
 </template>
 
 <script>
+import { store } from '../../store'
+
 export default {
   emits: ['toggleModal'],
   props: {
     organizations: Array
-  }
+  },
+  data() {
+    return {
+      store
+    }
+  },
 }
 </script>

@@ -116,48 +116,8 @@ export default {
         watchlist: null
       };
     },
-    async getDetails(updatePrice=false){
-      await Promise.all(this.store.filteredOrganizations.map((org) => {
-        if(updatePrice || !org.price){
-          return fetch('/organizations/show/' + org.code)
-            .then(response => response.json())
-            .then(data => {
-              let total_dividend = 0;
-              let avg_dividend = 0;
-              if(org?.dividends?.length>0){
-                org.dividends.map(function(dividend){
-                  total_dividend = total_dividend + dividend.cash;
-                });
-                avg_dividend = (((total_dividend/org.dividends.length)/10)/data.LastTrade)*100;
-              }
-              this.store.updateOrganization({
-                'id' : org.id,
-                'code' : org.code,
-                'name' : data.FullName,
-                'category' : data.MarketCategory,
-                'sector' : org.sector,
-                'price' : data.LastTrade,
-                'eps' : data.EPS,
-                'pe' : data.AuditedPE,
-                'upe' : data.UnAuditedPE,
-                'pnav' : data.NavPrice,
-                'pepnav' : (data.AuditedPE * data.NavPrice).toFixed(2),
-                'upepnav' : (data.UnAuditedPE * data.NavPrice).toFixed(2),
-                'div' : data.DividentYield,
-                'agm' : data.LastAGMHeld,
-                'listingYear' : data.ListingYear,
-                'longLoan' : data.LongLoan,
-                'shortLoan' : data.ShortLoan,
-                'marketCap' : data.MarketCap,
-                'website' : data.Web,
-                'is_watch_listed' : org.is_watch_listed,
-                'dividends': org.dividends,
-                'avg_dividend': avg_dividend.toFixed(2)
-              });
-            });
-        }
-        return true;
-      }));
+    getDetails(updatePrice=false){
+      this.store.getOrganizationDetails(this.store.filteredOrganizations,updatePrice);
     },
     isUrl(url) {
       if(this.$page.url.substr(1)===url){

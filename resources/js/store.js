@@ -62,6 +62,52 @@ export const store = reactive({
     }
     this.filterOrganizations(this.query);
   },
+  getOrganization(code){
+    return this.organizations.filter(org => org.code === code)[0];
+  },
+  async getOrganizationDetails(organizations=[],updatePrice=false){
+    await Promise.all(organizations.map((org) => {
+      if(updatePrice || !org.price){
+        return fetch('/organizations/show/' + org.code)
+          .then(response => response.json())
+          .then(data => {
+            let total_dividend = 0;
+            let avg_dividend = 0;
+            if(org?.dividends?.length>0){
+              org.dividends.map(function(dividend){
+                total_dividend = total_dividend + dividend.cash;
+              });
+              avg_dividend = (((total_dividend/org.dividends.length)/10)/data.LastTrade)*100;
+            }
+            this.updateOrganization({
+              'id' : org.id,
+              'code' : org.code,
+              'name' : data.FullName,
+              'category' : data.MarketCategory,
+              'sector' : org.sector,
+              'price' : data.LastTrade,
+              'eps' : data.EPS,
+              'pe' : data.AuditedPE,
+              'upe' : data.UnAuditedPE,
+              'pnav' : data.NavPrice,
+              'pepnav' : (data.AuditedPE * data.NavPrice).toFixed(2),
+              'upepnav' : (data.UnAuditedPE * data.NavPrice).toFixed(2),
+              'div' : data.DividentYield,
+              'agm' : data.LastAGMHeld,
+              'listingYear' : data.ListingYear,
+              'longLoan' : data.LongLoan,
+              'shortLoan' : data.ShortLoan,
+              'marketCap' : data.MarketCap,
+              'website' : data.Web,
+              'is_watch_listed' : org.is_watch_listed,
+              'dividends': org.dividends,
+              'avg_dividend': avg_dividend.toFixed(2)
+            });
+          });
+      }
+      return true;
+    }));
+  },
 
   // Portfolio
   portfolios: [],
@@ -71,5 +117,15 @@ export const store = reactive({
   updatePortfolio(obj){
     const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
     this.portfolios[index] = obj;
+    
+    // Update organization
+    this.portfolios[index].organizations.map((item,orgIndex) => {
+      this.portfolios[index].organizations[orgIndex] = this.organizations.filter((org) => {
+        if(org.code===item.code){
+          return true;
+        }
+        return false;
+      })[0];
+    });
   },
 });
