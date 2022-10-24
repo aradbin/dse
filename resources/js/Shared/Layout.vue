@@ -103,6 +103,17 @@ export default {
           this.store.updateOrganizations(data.organizations);
           this.store.updateSectors(data.sectors);
           this.store.updateLoadingOrganizations(false);
+          if(auth.user){
+            this.getPortfolios();
+          }
+        })
+    },
+    getPortfolios(){
+      fetch('/portfolio/all')
+        .then(response => response.json())
+        .then(data => {
+          this.store.updatePortfolios(data.portfolios);
+          this.store.updateBrokers(data.brokers);
         })
     }
   },

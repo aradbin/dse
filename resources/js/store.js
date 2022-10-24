@@ -1,60 +1,17 @@
 import { reactive } from 'vue'
 
 export const store = reactive({
-  // Organizations
+  // All Organizations
   organizations: [],
   loadingOrganizations: true,
-  filteredOrganizations: [],
   sectors: [],
-  query: {
-    search: this.getQueryParameter('search') || null,
-    se_index: this.getQueryParameter('se_index') || null,
-    category: this.getQueryParameter('category') || null,
-    sector: this.getQueryParameter('sector') || null,
-    per_page: this.getQueryParameter('per_page') || 20,
-    current_page: this.getQueryParameter('current_page') || 1,
-    watchlist: this.getQueryParameter('watchlist') || null
-  },
-  getQueryParameter(key){
-    if(window.location.search){
-      const urlParams = new URLSearchParams(window.location.search);
-      if(urlParams.get(key)){
-        return urlParams.get(key);
-      }
-    }
-    return null;
-  },
-  filterOrganizations(query){
-    const arr = this.organizations.filter(function(org){
-      let bool = true;
-      if(query.portfolio_organizations){
-        if(!query.portfolio_organizations.includes(org.id)){
-          bool = false;
-        }
-      }else{
-        if(query.search && !org.code.toLowerCase().includes(query.search.toLowerCase())){
-          bool = false;
-        }
-        if(query.se_index && query.se_index!==org.se_index){
-          bool = false;
-        }
-        if(query.category && query.category!==org.category){
-          bool = false;
-        }
-        if(query.sector && query.sector!==org.sector){
-          bool = false;
-        }
-        if(query.watchlist && !org.is_watch_listed){
-          bool = false;
-        }
-      }
-      return bool;
-    }).slice(((query.current_page - 1) * query.per_page), (((query.current_page - 1) * query.per_page) + query.per_page));
-
-    this.filteredOrganizations = arr;
-  },
   updateOrganizations(arr){
     this.organizations = arr;
+    this.filterOrganizations(this.query);
+  },
+  updateOrganization(obj){
+    const index = this.organizations.findIndex(org => org.code === obj.code);
+    this.organizations[index] = obj;
     this.filterOrganizations(this.query);
   },
   updateLoadingOrganizations(bool){
@@ -62,27 +19,6 @@ export const store = reactive({
   },
   updateSectors(arr){
     this.sectors = arr;
-  },
-  updateOrganization(obj){
-    const index = this.organizations.findIndex(org => org.code === obj.code);
-    this.organizations[index] = obj;
-    this.filterOrganizations(this.query);
-  },
-  updateQuery(query){
-    this.query = query;
-    this.filterOrganizations(this.query);
-    if(!query.portfolio_organizations){
-      let url = window.location.origin + window.location.pathname + '?';
-      let count = 1;
-      Object.keys(this.query).forEach(function(key) {
-        if(count===1){
-          url += key + '=' + obj[key];
-        }else{
-          url += '&' + key + '=' + obj[key];
-        }
-      });
-      window.history.replaceState(null, '', url);
-    }
   },
   toggleWatchlist(obj){
     const index = this.organizations.findIndex(org => org.code === obj.code);
@@ -136,25 +72,103 @@ export const store = reactive({
       return true;
     }));
   },
+  
+
+  // Filtered Organizations
+  filteredOrganizations: [],
+  query: {
+    search: this.getQueryParameter('search') || null,
+    se_index: this.getQueryParameter('se_index') || null,
+    category: this.getQueryParameter('category') || null,
+    sector: this.getQueryParameter('sector') || null,
+    per_page: this.getQueryParameter('per_page') || 20,
+    current_page: this.getQueryParameter('current_page') || 1,
+    watchlist: this.getQueryParameter('watchlist') || null
+  },
+  getQueryParameter(key){
+    if(window.location.search){
+      const urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.get(key)){
+        return urlParams.get(key);
+      }
+    }
+    return null;
+  },
+  updateQuery(query){
+    this.query = query;
+    this.filterOrganizations(this.query);
+    let url = window.location.origin + window.location.pathname + '?';
+    let count = 1;
+    Object.keys(this.query).forEach(function(key) {
+      if(count===1){
+        url += key + '=' + obj[key];
+      }else{
+        url += '&' + key + '=' + obj[key];
+      }
+      count++;
+    });
+    window.history.replaceState(null, '', url);
+  },
+  filterOrganizations(query){
+    const arr = this.organizations.filter(function(org){
+      let bool = true;
+      if(query.search && !org.code.toLowerCase().includes(query.search.toLowerCase())){
+        bool = false;
+      }
+      if(query.se_index && query.se_index!==org.se_index){
+        bool = false;
+      }
+      if(query.category && query.category!==org.category){
+        bool = false;
+      }
+      if(query.sector && query.sector!==org.sector){
+        bool = false;
+      }
+      if(query.watchlist && !org.is_watch_listed){
+        bool = false;
+      }
+      return bool;
+    }).slice(((query.current_page - 1) * query.per_page), (((query.current_page - 1) * query.per_page) + query.per_page));
+
+    this.filteredOrganizations = arr;
+  },
+
 
   // Portfolio
   portfolios: [],
+  brokers: [],
+  cost: 0,
+  value: 0,
   updatePortfolios(arr){
     this.portfolios = arr;
+    syncPortfolio();
   },
   updatePortfolio(obj){
     const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
     this.portfolios[index] = obj;
-    
-    // Update filtered organizations
-    const portfolioOrganizations = [];
-    this.portfolios[index].organizations.map((item,orgIndex) => {
-      portfolioOrganizations.push(item.organization.id);
-    });
-    this.updateQuery({
-      per_page: 1000,
-      current_page: 1,
-      portfolio_organizations: portfolioOrganizations
-    });
+    syncPortfolio();
   },
+  updateBrokers(arr){
+    this.brokers = arr;
+  },
+  syncPortfolio(){
+    let cost = 0;
+    let value = 0;
+    this.portfolios.map((portfolio,i) => {
+      let portfolioCost = 0;
+      let portfolioValue = 0;
+      portfolio.organizations.map((portfolioOrganization,j) => {
+        const index = this.organizations.findIndex(org => org.code === portfolioOrganization.organization.code);
+        this.portfolios[i].organizations[j].organization = this.organizations[index];
+        portfolioCost = portfolioCost + (this.portfolios[i].organizations[j].amount * this.portfolios[i].organizations[j].quantity);
+        portfolioValue = portfolioValue + (this.portfolios[i].organizations[j].organization.price * this.portfolios[i].organizations[j].quantity);
+      });
+      this.portfolios[i].cost = portfolioCost;
+      this.portfolios[i].value = portfolioValue;
+      cost = cost + portfolioCost;
+      value = value + portfolioValue;
+    });
+    this.cost = cost;
+    this.value = value;
+  }
 });

@@ -5,6 +5,24 @@
       {{ portfolio.name }}
       <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
     </h1>
+    <div class="flex flex-row md:flex-column">
+      <div>
+        <div>Portfolio Value</div>
+        <div>{{ store.getPortfolioValue(portfolio.id) }}</div>
+      </div>
+      <div>
+        <div>Gain (%)</div>
+        <div>{{ portfolio.balance }}</div>
+      </div>
+      <div>
+        <div>Available Balance</div>
+        <div>{{ portfolio.balance }}</div>
+      </div>
+      <div>
+        <div>Total Assets</div>
+        <div>{{ portfolio.balance }}</div>
+      </div>
+    </div>
     <div class="mt-4 mb-4">
       <Organizations :organizations="portfolio.organizations" @toggleModal="toggleTransactionModal" />
     </div>

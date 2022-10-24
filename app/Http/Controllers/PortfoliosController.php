@@ -14,15 +14,15 @@ class PortfoliosController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Portfolios/Index', [
-            'brokers' => Broker::select('id','name')->get(),
-            'portfolios' => Auth::user()->portfolios()->with('organizations')->get()
-        ]);
+        return Inertia::render('Portfolios/Index');
     }
 
     public function all()
     {
-        return Auth::user()->portfolios()->with('organizations')->get();
+        return [
+            'brokers' => Broker::select('id','name')->get(),
+            'portfolios' => Auth::user()->portfolios()->with('organizations.organization')->get()
+        ];
     }
 
     public function store(Request $request)
