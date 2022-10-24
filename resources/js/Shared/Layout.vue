@@ -102,6 +102,7 @@ export default {
         .then(data => {
           this.store.updateOrganizations(data.organizations);
           this.store.updateSectors(data.sectors);
+          this.store.updateLoadingOrganizations(false);
         })
     }
   },

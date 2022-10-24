@@ -3,43 +3,62 @@ import { reactive } from 'vue'
 export const store = reactive({
   // Organizations
   organizations: [],
+  loadingOrganizations: true,
   filteredOrganizations: [],
   sectors: [],
   query: {
-    search: null,
-    se_index: null,
-    category: null,
-    sector: null,
-    per_page: 20,
-    page: 1,
-    watchlist: null
+    search: this.getQueryParameter('search') || null,
+    se_index: this.getQueryParameter('se_index') || null,
+    category: this.getQueryParameter('category') || null,
+    sector: this.getQueryParameter('sector') || null,
+    per_page: this.getQueryParameter('per_page') || 20,
+    current_page: this.getQueryParameter('current_page') || 1,
+    watchlist: this.getQueryParameter('watchlist') || null
+  },
+  getQueryParameter(key){
+    if(window.location.search){
+      const urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.get(key)){
+        return urlParams.get(key);
+      }
+    }
+    return null;
   },
   filterOrganizations(query){
     const arr = this.organizations.filter(function(org){
       let bool = true;
-      if(query.search && !org.code.toLowerCase().includes(query.search.toLowerCase())){
-        bool = false;
-      }
-      if(query.se_index && query.se_index!==org.se_index){
-        bool = false;
-      }
-      if(query.category && query.category!==org.category){
-        bool = false;
-      }
-      if(query.sector && query.sector!==org.sector){
-        bool = false;
-      }
-      if(query.watchlist && !org.is_watch_listed){
-        bool = false;
+      if(query.portfolio_organizations){
+        if(!query.portfolio_organizations.includes(org.id)){
+          bool = false;
+        }
+      }else{
+        if(query.search && !org.code.toLowerCase().includes(query.search.toLowerCase())){
+          bool = false;
+        }
+        if(query.se_index && query.se_index!==org.se_index){
+          bool = false;
+        }
+        if(query.category && query.category!==org.category){
+          bool = false;
+        }
+        if(query.sector && query.sector!==org.sector){
+          bool = false;
+        }
+        if(query.watchlist && !org.is_watch_listed){
+          bool = false;
+        }
       }
       return bool;
-    }).slice(((query.page - 1) * query.per_page), (((query.page - 1) * query.per_page) + query.per_page));
+    }).slice(((query.current_page - 1) * query.per_page), (((query.current_page - 1) * query.per_page) + query.per_page));
 
     this.filteredOrganizations = arr;
   },
   updateOrganizations(arr){
     this.organizations = arr;
     this.filterOrganizations(this.query);
+  },
+  updateLoadingOrganizations(bool){
+    this.loadingOrganizations = bool;
   },
   updateSectors(arr){
     this.sectors = arr;
@@ -52,6 +71,18 @@ export const store = reactive({
   updateQuery(query){
     this.query = query;
     this.filterOrganizations(this.query);
+    if(!query.portfolio_organizations){
+      let url = window.location.origin + window.location.pathname + '?';
+      let count = 1;
+      Object.keys(this.query).forEach(function(key) {
+        if(count===1){
+          url += key + '=' + obj[key];
+        }else{
+          url += '&' + key + '=' + obj[key];
+        }
+      });
+      window.history.replaceState(null, '', url);
+    }
   },
   toggleWatchlist(obj){
     const index = this.organizations.findIndex(org => org.code === obj.code);
@@ -61,9 +92,6 @@ export const store = reactive({
       this.organizations[index].is_watch_listed = { 'organization_id': obj.id };
     }
     this.filterOrganizations(this.query);
-  },
-  getOrganization(code){
-    return this.organizations.filter(org => org.code === code)[0];
   },
   async getOrganizationDetails(organizations=[],updatePrice=false){
     await Promise.all(organizations.map((org) => {
@@ -118,14 +146,15 @@ export const store = reactive({
     const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
     this.portfolios[index] = obj;
     
-    // Update organization
+    // Update filtered organizations
+    const portfolioOrganizations = [];
     this.portfolios[index].organizations.map((item,orgIndex) => {
-      this.portfolios[index].organizations[orgIndex] = this.organizations.filter((org) => {
-        if(org.code===item.code){
-          return true;
-        }
-        return false;
-      })[0];
+      portfolioOrganizations.push(item.organization.id);
+    });
+    this.updateQuery({
+      per_page: 1000,
+      current_page: 1,
+      portfolio_organizations: portfolioOrganizations
     });
   },
 });

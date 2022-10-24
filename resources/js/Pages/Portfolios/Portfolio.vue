@@ -45,11 +45,13 @@
         showModal: false,
         showTransactionModal: false,
         type: 1,
-        organization_id: null
+        organization_id: null,
       }
     },
     watch: {
-
+      'store.organizations'(){
+        this.getDetails();
+      },
     },
     methods: {
       toggleModal: function(){
@@ -60,13 +62,22 @@
         this.organization_id = organization_id;
         this.showTransactionModal = !this.showTransactionModal;
       },
-      updatePortfolios(updatePrice=false){
+      getDetails(updatePrice=false){
+        this.store.getOrganizationDetails(this.store.filteredOrganizations,updatePrice);
+      },
+      updatePortfolios(){
         this.store.updatePortfolio(this.portfolio);
-        this.store.getOrganizationDetails(this.portfolio.organizations,updatePrice);
       }
     },
     mounted(){
-      this.updatePortfolios()
+      this.updatePortfolios();
+      this.getDetails();
+      window.setInterval(() => {
+        let d = new Date();
+        if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
+          this.getDetails(true);
+        }
+      }, 60000);
     }
   }
 </script>

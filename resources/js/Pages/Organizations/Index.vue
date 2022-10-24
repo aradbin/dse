@@ -51,7 +51,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
       <card v-for="organization in this.store.filteredOrganizations" :key="organization.id" :organization="organization" />
     </div>
-    <!-- <pagination class="mt-6" :links="organizations.links" /> -->
+    <pagination-front class="mt-6" :total="this.store.filteredOrganizations.length" :current_page="form.current_page" :per_page="form.per_page" @changePage="changePage" />
   </div>
 </template>
 
@@ -60,7 +60,7 @@ import { Head, Link } from '@inertiajs/inertia-vue3'
 import Icon from '@/Shared/Icon'
 import Layout from '@/Shared/Layout'
 import throttle from 'lodash/throttle'
-import Pagination from '@/Shared/Pagination'
+import PaginationFront from '@/Shared/PaginationFront'
 import SearchFilter from '@/Shared/SearchFilter'
 import Card from '@/Shared/Card'
 import { store } from '../../store'
@@ -70,7 +70,7 @@ export default {
     Head,
     Icon,
     Link,
-    Pagination,
+    PaginationFront,
     SearchFilter,
     Card
   },
@@ -86,7 +86,7 @@ export default {
         category: null,
         sector: null,
         per_page: 20,
-        page: 1,
+        current_page: 1,
         watchlist: false
       },
       store
@@ -112,9 +112,12 @@ export default {
         category: null,
         sector: null,
         per_page: 20,
-        page: 1,
+        current_page: 1,
         watchlist: null
       };
+    },
+    changePage(page){
+      this.form.current_page = page;
     },
     getDetails(updatePrice=false){
       this.store.getOrganizationDetails(this.store.filteredOrganizations,updatePrice);
@@ -129,10 +132,10 @@ export default {
   mounted(){
     if(this.isUrl('watchlist')){
       this.form.watchlist = true;
-      store.updateQuery(this.form)
+      this.store.updateQuery(this.form)
     }else{
       this.form.watchlist = false;
-      store.updateQuery(this.form)
+      this.store.updateQuery(this.form)
     }
     this.getDetails();
     window.setInterval(() => {
