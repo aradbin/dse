@@ -17,7 +17,7 @@
         <th class="pb-4 pt-6 px-6">Gain (%)</th>
         <th class="pb-4 pt-6 px-6">Action</th>
       </tr>
-      <tr v-for="org in organizations" :key="org.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+      <tr v-for="org in store.portfolio.organizations" :key="org.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
         <td class="border-t px-6 py-4">{{ org.organization.code }}</td>
         <td class="border-t px-6 py-4">{{ org.quantity }}</td>
         <td class="border-t px-6 py-4">{{ org.amount }}</td>
@@ -44,7 +44,7 @@ import { store } from '../../store'
 export default {
   emits: ['toggleModal'],
   props: {
-    organizations: Array
+    
   },
   data() {
     return {

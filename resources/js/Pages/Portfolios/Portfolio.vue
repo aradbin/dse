@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="mt-4 mb-4">
-      <Organizations :organizations="store.portfolio?.organizations" @toggleModal="toggleTransactionModal" />
+      <Organizations @toggleModal="toggleTransactionModal" />
     </div>
     <div class="mt-8 mb-4">
       <Transactions :transactions="store.portfolio?.transactions" @toggleModal="toggleTransactionModal" />
