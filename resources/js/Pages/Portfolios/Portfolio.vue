@@ -8,11 +8,11 @@
     <div class="flex flex-row md:flex-column">
       <div>
         <div>Portfolio Value</div>
-        <div>{{ store.portfolio.value }}</div>
+        <div>{{ store.portfolio.value || 0 }}</div>
       </div>
       <div>
         <div>Gain (%)</div>
-        <div>{{ store.portfolio.cost - store.portfolio.value }} ( {{ (((store.portfolio.cost - store.portfolio.value) / store.portfolio.cost) * 100) || 0 }}% )</div>
+        <div>{{ store.portfolio.value ? (store.portfolio.value - store.portfolio.cost) : (0 - store.portfolio.cost) }} ( {{ store.portfolio.value ? (((store.portfolio.value - store.portfolio.cost) / store.portfolio.cost) * 100).toFixed(2) : 0 }}% )</div>
       </div>
       <div>
         <div>Available Balance</div>
@@ -20,7 +20,7 @@
       </div>
       <div>
         <div>Total Assets</div>
-        <div>{{ store.portfolio.value + store.portfolio.balance }}</div>
+        <div>{{ store.portfolio.value ? (store.portfolio.value + store.portfolio.balance) : store.portfolio.balance }}</div>
       </div>
     </div>
     <div class="mt-4 mb-4">
@@ -81,11 +81,7 @@
         this.showTransactionModal = !this.showTransactionModal;
       },
       getDetails(updatePrice=false){
-        let organizations = [];
-        this.portfolio.organizations.map((portfolioOrganization) => {
-          organizations.push(portfolioOrganization.organization);
-        });
-        this.store.getOrganizationDetails(organizations,updatePrice);
+        this.store.getPortfolioDetails(this.portfolio.id,updatePrice);
       },
       updatePortfolios(){
         this.store.updatePortfolio(this.portfolio);

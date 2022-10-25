@@ -10,7 +10,7 @@
     </div>
   </div>
 
-  <PortfolioForm v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" />
+  <PortfolioForm v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
 </template>
   
 <script>
@@ -37,6 +37,9 @@
     methods: {
       toggleModal: function(){
         this.showModal = !this.showModal;
+      },
+      updatePortfolios(){
+        // this.store.updatePortfolio(this.portfolio);
       }
     }
   }

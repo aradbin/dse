@@ -50,14 +50,14 @@ export default {
         })
       }
     },
-    emits: ['toggleModal'],
+    emits: ['toggleModal','updatePortfolios'],
     methods: {
       submitForm(){
         this.form.post('/portfolio', {
             // preserveScroll: true,
             onSuccess: () => {
                 this.$emit('toggleModal');
-                // this.$emit('updatePortfolios');
+                this.$emit('updatePortfolios');
             },
         });
       }

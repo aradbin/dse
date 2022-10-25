@@ -14,7 +14,6 @@
         <th class="pb-4 pt-6 px-6">Quantity</th>
         <th class="pb-4 pt-6 px-6">Commission</th>
         <th class="pb-4 pt-6 px-6">Remarks</th>
-        
       </tr>
       <tr v-for="item in transactions" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
         <td class="border-t px-6 py-4">{{ getDate(item.created_at) }}</td>

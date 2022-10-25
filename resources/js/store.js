@@ -12,7 +12,9 @@ export const store = reactive({
   },
   updateOrganization(obj){
     const index = this.organizations.findIndex(org => org.code === obj.code);
-    this.organizations[index] = obj;
+    if(index >= 0){
+      this.organizations[index] = obj;
+    }
     this.filterOrganizations(this.query);
     this.syncPortfolio();
   },
@@ -171,9 +173,13 @@ export const store = reactive({
       let portfolioValue = 0;
       portfolio.organizations.map((portfolioOrganization,j) => {
         const index = this.organizations.findIndex(org => org.code === portfolioOrganization.organization.code);
-        this.portfolios[i].organizations[j].organization = this.organizations[index];
-        portfolioCost = portfolioCost + (this.portfolios[i].organizations[j].amount * this.portfolios[i].organizations[j].quantity);
-        portfolioValue = portfolioValue + (this.portfolios[i].organizations[j].organization.price * this.portfolios[i].organizations[j].quantity);
+        if(index >= 0){
+          this.portfolios[i].organizations[j].organization = this.organizations[index];
+          portfolioCost = portfolioCost + (this.portfolios[i].organizations[j].amount * this.portfolios[i].organizations[j].quantity);
+          if(this.portfolios[i].organizations[j].organization.price){
+            portfolioValue = portfolioValue + (this.portfolios[i].organizations[j].organization.price * this.portfolios[i].organizations[j].quantity);
+          }
+        }
       });
       this.portfolios[i].cost = portfolioCost;
       this.portfolios[i].value = portfolioValue;
@@ -185,5 +191,13 @@ export const store = reactive({
     if(this.portfolio && this.portfolios.length > 0){
       this.portfolio = this.portfolios.filter(portfolio => portfolio.id===this.portfolio.id)[0];
     }
+  },
+  getPortfolioDetails(id,updatePrice=false){
+    const index = this.portfolios.findIndex(portfolio => portfolio.id === id);
+    let organizations = [];
+    this.portfolios[index].organizations.map((portfolioOrganization) => {
+      organizations.push(portfolioOrganization.organization);
+    });
+    this.getOrganizationDetails(organizations,updatePrice);
   }
 });
