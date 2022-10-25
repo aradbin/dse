@@ -49,9 +49,9 @@
       </Link> -->
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-      <card v-for="organization in this.store.filteredOrganizations" :key="organization.id" :organization="organization" />
+      <card v-for="organization in this.store.filteredOrganizationsByPage" :key="organization.id" :organization="organization" />
     </div>
-    <pagination-front class="mt-6" :total="this.store.filteredOrganizations.length" :current_page="form.current_page" :per_page="form.per_page" @changePage="changePage" />
+    <PaginationFront class="mt-6" :total="this.store.filteredOrganizations.length" :current_page="form.current_page" :per_page="form.per_page" @changePage="changePage" />
   </div>
 </template>
 
@@ -120,7 +120,7 @@ export default {
       this.form.current_page = page;
     },
     getDetails(updatePrice=false){
-      this.store.getOrganizationDetails(this.store.filteredOrganizations,updatePrice);
+      this.store.getOrganizationDetails(this.store.filteredOrganizationsByPage,updatePrice);
     },
     isUrl(url) {
       if(this.$page.url.substr(1)===url){

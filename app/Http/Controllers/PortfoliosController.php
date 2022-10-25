@@ -21,7 +21,7 @@ class PortfoliosController extends Controller
     {
         return [
             'brokers' => Broker::select('id','name')->get(),
-            'portfolios' => Auth::user()->portfolios()->with('organizations.organization')->get()
+            'portfolios' => Auth::user()->portfolios()->with('organizations')->get()
         ];
     }
 
@@ -63,10 +63,7 @@ class PortfoliosController extends Controller
         $portfolio = Auth::user()->portfolios()->with('organizations.organization', 'transactions')->find($id);
 
         if($portfolio){
-            $brokers = Broker::select('id','name')->get();
-
             return Inertia::render('Portfolios/Portfolio', [
-                'brokers' => $brokers,
                 'portfolio' => $portfolio
             ]);
         }

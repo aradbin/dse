@@ -38,7 +38,6 @@ export default {
         TextInput,
     },
     props: {
-      brokers: Array,
       type: Number,
       portfolio: Object,
       organization_id: Number

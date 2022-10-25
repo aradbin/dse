@@ -103,9 +103,6 @@ export default {
           this.store.updateOrganizations(data.organizations);
           this.store.updateSectors(data.sectors);
           this.store.updateLoadingOrganizations(false);
-          if(auth.user){
-            this.getPortfolios();
-          }
         })
     },
     getPortfolios(){
@@ -119,6 +116,9 @@ export default {
   },
   mounted(){
     this.getOrganizations();
+    if(this.auth.user){
+      this.getPortfolios();
+    }
   }
 }
 </script>

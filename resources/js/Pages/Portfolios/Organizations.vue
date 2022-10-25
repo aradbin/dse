@@ -17,18 +17,18 @@
         <th class="pb-4 pt-6 px-6">Gain (%)</th>
         <th class="pb-4 pt-6 px-6">Action</th>
       </tr>
-      <tr v-for="org in store.filteredOrganizations" :key="org.code" class="hover:bg-gray-100 focus-within:bg-gray-100">
-        <td class="border-t px-6 py-4">{{ org.code }}</td>
-        <td class="border-t px-6 py-4">{{ getOrganization(org.code).quantity }}</td>
-        <td class="border-t px-6 py-4">{{ getOrganization(org.code).amount }}</td>
-        <td class="border-t px-6 py-4">{{ getOrganization(org.code).amount * getOrganization(org.code).quantity }}</td>
-        <td class="border-t px-6 py-4">{{ org.price }}</td>
-        <td class="border-t px-6 py-4">{{ org.price * getOrganization(org.code).quantity }}</td>
-        <td class="border-t px-6 py-4">{{ (getOrganization(org.code).amount * getOrganization(org.code).quantity) - (org.price * getOrganization(org.code).quantity) }}</td>
-        <td class="border-t px-6 py-4">{{ ((getOrganization(org.code).amount * getOrganization(org.code).quantity) - (org.price * getOrganization(org.code).quantity)) / (getOrganization(org.code).amount * getOrganization(org.code).quantity) * 100 }}</td>
+      <tr v-for="org in organizations" :key="org.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+        <td class="border-t px-6 py-4">{{ org.organization.code }}</td>
+        <td class="border-t px-6 py-4">{{ org.quantity }}</td>
+        <td class="border-t px-6 py-4">{{ org.amount }}</td>
+        <td class="border-t px-6 py-4">{{ org.amount * org.quantity }}</td>
+        <td class="border-t px-6 py-4">{{ org.organization.price }}</td>
+        <td class="border-t px-6 py-4">{{ org.organization.price * org.quantity }}</td>
+        <td class="border-t px-6 py-4">{{ (org.amount * org.quantity) - (org.organization.price * org.quantity) }}</td>
+        <td class="border-t px-6 py-4">{{ ((org.amount * org.quantity) - (org.organization.price * org.quantity)) / (org.amount * org.quantity) * 100 }}</td>
         <td class="border-t px-6 py-4">
-          <button class="btn-success px-4 py-2 mr-2" @click="$emit('toggleModal',3,org.id)">Buy More</button>
-          <button class="btn-danger px-4 py-2" @click="$emit('toggleModal',4,org.id)">Sell</button>
+          <button class="btn-success px-4 py-2 mr-2" @click="$emit('toggleModal',3,org.organization.id)">Buy More</button>
+          <button class="btn-danger px-4 py-2" @click="$emit('toggleModal',4,org.organization.id)">Sell</button>
         </td>
       </tr>
       <tr v-if="organizations?.length === 0">
@@ -49,11 +49,6 @@ export default {
   data() {
     return {
       store
-    }
-  },
-  methods: {
-    getOrganization(code){
-      this.organizations.filter(item => item.organization.code===code)[0]
     }
   }
 }

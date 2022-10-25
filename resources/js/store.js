@@ -8,11 +8,13 @@ export const store = reactive({
   updateOrganizations(arr){
     this.organizations = arr;
     this.filterOrganizations(this.query);
+    this.syncPortfolio();
   },
   updateOrganization(obj){
     const index = this.organizations.findIndex(org => org.code === obj.code);
     this.organizations[index] = obj;
     this.filterOrganizations(this.query);
+    this.syncPortfolio();
   },
   updateLoadingOrganizations(bool){
     this.loadingOrganizations = bool;
@@ -76,16 +78,17 @@ export const store = reactive({
 
   // Filtered Organizations
   filteredOrganizations: [],
+  filteredOrganizationsByPage: [],
   query: {
-    search: this.getQueryParameter('search') || null,
-    se_index: this.getQueryParameter('se_index') || null,
-    category: this.getQueryParameter('category') || null,
-    sector: this.getQueryParameter('sector') || null,
-    per_page: this.getQueryParameter('per_page') || 20,
-    current_page: this.getQueryParameter('current_page') || 1,
-    watchlist: this.getQueryParameter('watchlist') || null
+    search: null,
+    se_index: null,
+    category: null,
+    sector: null,
+    per_page: 20,
+    current_page: 1,
+    watchlist: null
   },
-  getQueryParameter(key){
+  getQueryParameter(key){console.log(key)
     if(window.location.search){
       const urlParams = new URLSearchParams(window.location.search);
       if(urlParams.get(key)){
@@ -97,17 +100,19 @@ export const store = reactive({
   updateQuery(query){
     this.query = query;
     this.filterOrganizations(this.query);
-    let url = window.location.origin + window.location.pathname + '?';
-    let count = 1;
-    Object.keys(this.query).forEach(function(key) {
-      if(count===1){
-        url += key + '=' + obj[key];
-      }else{
-        url += '&' + key + '=' + obj[key];
-      }
-      count++;
-    });
-    window.history.replaceState(null, '', url);
+    // let url = window.location.origin + window.location.pathname + '?';
+    // let count = 1;
+    // Object.keys(this.query).forEach(function(key){
+    //   if(query[key]){
+    //     if(count===1){
+    //       url = url + key + '=' + query[key];
+    //     }else{
+    //       url = url + '&' + key + '=' + query[key];
+    //     }
+    //     count++;
+    //   }
+    // });
+    // window.history.replaceState(null, '', url);
   },
   filterOrganizations(query){
     const arr = this.organizations.filter(function(org){
@@ -128,25 +133,32 @@ export const store = reactive({
         bool = false;
       }
       return bool;
-    }).slice(((query.current_page - 1) * query.per_page), (((query.current_page - 1) * query.per_page) + query.per_page));
+    });
 
     this.filteredOrganizations = arr;
+    this.filteredOrganizationsByPage = arr.slice(((query.current_page - 1) * query.per_page), (((query.current_page - 1) * query.per_page) + query.per_page));
   },
 
 
   // Portfolio
   portfolios: [],
+  portfolio: {},
   brokers: [],
   cost: 0,
   value: 0,
   updatePortfolios(arr){
     this.portfolios = arr;
-    syncPortfolio();
+    this.syncPortfolio();
   },
   updatePortfolio(obj){
     const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
-    this.portfolios[index] = obj;
-    syncPortfolio();
+    if(index >= 0){
+      this.portfolios[index] = obj;
+    }else{
+      this.portfolios.push(obj);
+    }
+    this.portfolio = obj;
+    this.syncPortfolio();
   },
   updateBrokers(arr){
     this.brokers = arr;
@@ -170,5 +182,8 @@ export const store = reactive({
     });
     this.cost = cost;
     this.value = value;
+    if(this.portfolio && this.portfolios.length > 0){
+      this.portfolio = this.portfolios.filter(portfolio => portfolio.id===this.portfolio.id)[0];
+    }
   }
 });

@@ -10,7 +10,7 @@
     </div>
   </div>
 
-  <PortfolioForm v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
+  <PortfolioForm v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" />
 </template>
   
 <script>
@@ -28,29 +28,16 @@
       Portfolios
     },
     layout: Layout,
-    props: {
-      brokers: Array,
-      portfolios: Array
-    },
     data() {
       return {
         store,
         showModal: false,
       }
     },
-    watch: {
-      
-    },
     methods: {
       toggleModal: function(){
         this.showModal = !this.showModal;
-      },
-      updatePortfolios(){
-        this.store.updatePortfolios(this.portfolios);
       }
-    },
-    mounted(){
-      this.updatePortfolios()
     }
   }
 </script>

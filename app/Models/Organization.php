@@ -22,7 +22,7 @@ class Organization extends Model
 
     public function watchlist()
     {
-        return $this->hasMany(Watchlist::class);
+        return $this->hasOne(Watchlist::class);
     }
 
     public function isWatchListed()
@@ -39,14 +39,14 @@ class Organization extends Model
         return $this->hasMany(PortfolioOrganization::class);
     }
 
-    public function isPortfolio()
-    {
-        if(Auth::user()){
-            return $this->portfolioOrganization()->portfolio()->where('user_id',Auth::user()->id);
-        }
+    // public function isPortfolio()
+    // {
+    //     if(Auth::user()){
+    //         return $this->portfolioOrganization()->portfolio()->where('user_id',Auth::user()->id);
+    //     }
         
-        return null;
-    }
+    //     return null;
+    // }
 
     public function dividends()
     {
