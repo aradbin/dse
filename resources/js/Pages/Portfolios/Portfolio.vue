@@ -2,32 +2,32 @@
   <div>
     <Head title="Portfolio" />
     <h1 class="mb-4 text-3xl font-bold">
-      {{ store.portfolio.name }}
+      {{ store.portfolio?.name }}
       <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
     </h1>
     <div class="flex flex-row md:flex-column">
       <div>
         <div>Portfolio Value</div>
-        <div>{{ store.portfolio.value || 0 }}</div>
+        <div>{{ store.portfolio?.value || 0 }}</div>
       </div>
       <div>
         <div>Gain (%)</div>
-        <div>{{ store.portfolio.value ? (store.portfolio.value - store.portfolio.cost) : (0 - store.portfolio.cost) }} ( {{ store.portfolio.value ? (((store.portfolio.value - store.portfolio.cost) / store.portfolio.cost) * 100).toFixed(2) : 0 }}% )</div>
+        <div>{{ store.portfolio?.value ? (store.portfolio?.value - store.portfolio?.cost) : (0 - store.portfolio?.cost) }} ( {{ store.portfolio?.value ? (((store.portfolio?.value - store.portfolio?.cost) / store.portfolio?.cost) * 100).toFixed(2) : 0 }}% )</div>
       </div>
       <div>
         <div>Available Balance</div>
-        <div>{{ store.portfolio.balance }}</div>
+        <div>{{ store.portfolio?.balance }}</div>
       </div>
       <div>
         <div>Total Assets</div>
-        <div>{{ store.portfolio.value ? (store.portfolio.value + store.portfolio.balance) : store.portfolio.balance }}</div>
+        <div>{{ store.portfolio?.value ? (store.portfolio?.value + store.portfolio?.balance) : store.portfolio?.balance }}</div>
       </div>
     </div>
     <div class="mt-4 mb-4">
-      <Organizations :organizations="store.portfolio.organizations" @toggleModal="toggleTransactionModal" />
+      <Organizations :organizations="store.portfolio?.organizations" @toggleModal="toggleTransactionModal" />
     </div>
     <div class="mt-8 mb-4">
-      <Transactions :transactions="store.portfolio.transactions" @toggleModal="toggleTransactionModal" />
+      <Transactions :transactions="store.portfolio?.transactions" @toggleModal="toggleTransactionModal" />
     </div>
   </div>
 
