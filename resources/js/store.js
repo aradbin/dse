@@ -194,10 +194,12 @@ export const store = reactive({
   },
   getPortfolioDetails(id,updatePrice=false){
     const index = this.portfolios.findIndex(portfolio => portfolio.id === id);
-    let organizations = [];
-    this.portfolios[index].organizations.map((portfolioOrganization) => {
-      organizations.push(portfolioOrganization.organization);
-    });
-    this.getOrganizationDetails(organizations,updatePrice);
+    if(index >= 0){
+      let organizations = [];
+      this.portfolios[index]?.organizations?.map((portfolioOrganization) => {
+        organizations.push(portfolioOrganization.organization);
+      });
+      this.getOrganizationDetails(organizations,updatePrice);
+    }
   }
 });
