@@ -5,10 +5,14 @@ export const store = reactive({
   organizations: [],
   loadingOrganizations: true,
   sectors: [],
-  updateOrganizations(arr){
+  updateOrganizations(arr,filter=true,portfolio=true){
     this.organizations = arr;
-    this.filterOrganizations(this.query);
-    this.syncPortfolio();
+    if(filter){
+      this.filterOrganizations(this.query);
+    }
+    if(portfolio){
+      this.syncPortfolio();
+    }
   },
   updateOrganization(obj){
     const index = this.organizations.findIndex(org => org.code === obj.code);
@@ -166,30 +170,30 @@ export const store = reactive({
     this.brokers = arr;
   },
   syncPortfolio(){
-    let cost = 0;
-    let value = 0;
+    let totalCost = 0;
+    let totalValue = 0;
     this.portfolios.map((portfolio,i) => {
       let portfolioCost = 0;
       let portfolioValue = 0;
       portfolio.organizations.map((portfolioOrganization,j) => {
-        const index = this.organizations.findIndex(org => org.code === portfolioOrganization.organization.code);
-        if(index >= 0){
-          this.portfolios[i].organizations[j].organization = this.organizations[index];
-          portfolioCost = portfolioCost + (this.portfolios[i].organizations[j].amount * this.portfolios[i].organizations[j].quantity);
-          if(this.portfolios[i].organizations[j].organization.price){
-            portfolioValue = portfolioValue + (this.portfolios[i].organizations[j].organization.price * this.portfolios[i].organizations[j].quantity);
+        const organization = this.organizations.find(org => org.code === portfolioOrganization.organization.code);
+        if(organization){
+          this.portfolios[i].organizations[j].organization = organization;
+          portfolioCost = portfolioCost + (portfolioOrganization.amount * portfolioOrganization.quantity);
+          if(organization.price){
+            portfolioValue = portfolioValue + (organization.price * portfolioOrganization.quantity);
           }
         }
       });
       this.portfolios[i].cost = portfolioCost;
       this.portfolios[i].value = portfolioValue;
-      cost = cost + portfolioCost;
-      value = value + portfolioValue;
+      totalCost = totalCost + portfolioCost;
+      totalValue = totalValue + portfolioValue;
     });
     this.cost = cost;
     this.value = value;
-    if(this.portfolio && this.portfolios.length > 0){
-      this.portfolio = this.portfolios.filter(portfolio => portfolio.id===this.portfolio.id)[0];
+    if(Object.keys(this.portfolio).length > 0 && this.portfolios.length > 0){
+      this.portfolio = this.portfolios.find(portfolio => portfolio.id===this.portfolio.id);
     }
   },
   getPortfolioDetails(id,updatePrice=false){

@@ -100,9 +100,12 @@ export default {
       fetch('/organizations/all')
         .then(response => response.json())
         .then(data => {
-          this.store.updateOrganizations(data.organizations);
+          this.store.updateOrganizations(data.organizations,false,false);
           this.store.updateSectors(data.sectors);
           this.store.updateLoadingOrganizations(false);
+          if(this.auth.user){
+            this.getPortfolios();
+          }
         })
     },
     getPortfolios(){
@@ -116,9 +119,9 @@ export default {
   },
   mounted(){
     this.getOrganizations();
-    if(this.auth.user){
-      this.getPortfolios();
-    }
+    // if(this.auth.user){
+    //   this.getPortfolios();
+    // }
   }
 }
 </script>
