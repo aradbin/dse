@@ -94,12 +94,13 @@ export default {
   },
   watch: {
     'store.organizations'(){
+      store.updateQuery(this.form);
       this.getDetails();
     },
     form: {
       deep: true,
       handler: throttle(function () {
-        store.updateQuery(this.form)
+        store.updateQuery(this.form);
         this.getDetails();
       }, 150),
     }
@@ -132,12 +133,13 @@ export default {
   mounted(){
     if(this.isUrl('watchlist')){
       this.form.watchlist = true;
-      this.store.updateQuery(this.form)
     }else{
       this.form.watchlist = false;
-      this.store.updateQuery(this.form)
     }
-    this.getDetails();
+    if(this.store.organizations.length > 0){
+      this.store.updateQuery(this.form);
+      this.getDetails();
+    }
     window.setInterval(() => {
       let d = new Date();
       if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
