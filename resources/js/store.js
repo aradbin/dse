@@ -94,7 +94,7 @@ export const store = reactive({
     current_page: 1,
     watchlist: null
   },
-  getQueryParameter(key){console.log(key)
+  getQueryParameter(key){
     if(window.location.search){
       const urlParams = new URLSearchParams(window.location.search);
       if(urlParams.get(key)){
@@ -190,8 +190,8 @@ export const store = reactive({
       totalCost = totalCost + portfolioCost;
       totalValue = totalValue + portfolioValue;
     });
-    this.cost = cost;
-    this.value = value;
+    this.cost = totalCost;
+    this.value = totalValue;
     if(Object.keys(this.portfolio).length > 0 && this.portfolios.length > 0){
       this.portfolio = this.portfolios.find(portfolio => portfolio.id===this.portfolio.id);
     }
