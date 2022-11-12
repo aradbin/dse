@@ -3,6 +3,7 @@
     <Head title="Portfolio" />
     <h1 class="mb-4 text-3xl font-bold">
       My Portfolio
+      <span class="px-3 py-1 rounded text-white text-sm leading-4 font-bold whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400" :class="store.gain >= 0 ? 'bg-green-600' : 'bg-red-600'">{{ store.gain }} ({{ store.gainPercent ? store.gainPercent : 0 }}%)</span>
       <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
     </h1>
     <div class="mt-4 mb-4">
@@ -10,7 +11,7 @@
     </div>
   </div>
 
-  <PortfolioForm v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
+  <PortfolioForm v-if="showModal" @toggleModal="toggleModal" />
 </template>
   
 <script>
@@ -37,9 +38,6 @@
     methods: {
       toggleModal: function(){
         this.showModal = !this.showModal;
-      },
-      updatePortfolios(){
-        // this.store.updatePortfolio(this.portfolio);
       }
     }
   }

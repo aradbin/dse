@@ -5,14 +5,8 @@ export const store = reactive({
   organizations: [],
   loadingOrganizations: true,
   sectors: [],
-  updateOrganizations(arr,filter=true,portfolio=true){
+  updateOrganizations(arr){
     this.organizations = arr;
-    if(filter){
-      this.filterOrganizations(this.query);
-    }
-    if(portfolio){
-      this.syncPortfolio();
-    }
   },
   updateOrganization(obj){
     const index = this.organizations.findIndex(org => org.code === obj.code);
@@ -152,9 +146,10 @@ export const store = reactive({
   brokers: [],
   cost: 0,
   value: 0,
+  gain: 0,
+  gainPercent: 0,
   updatePortfolios(arr){
     this.portfolios = arr;
-    this.syncPortfolio();
   },
   updatePortfolio(obj){
     const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
@@ -187,23 +182,28 @@ export const store = reactive({
       });
       this.portfolios[i].cost = portfolioCost;
       this.portfolios[i].value = portfolioValue;
+      this.portfolios[i].gain = (portfolioCost - portfolioValue).toFixed(2);
+      this.portfolios[i].gainPercent = (((portfolioCost - portfolioValue) / portfolioCost) * 100).toFixed(2);
       totalCost = totalCost + portfolioCost;
       totalValue = totalValue + portfolioValue;
     });
     this.cost = totalCost;
     this.value = totalValue;
+    this.gain = (totalCost - totalValue).toFixed(2);
+    this.gainPercent = (((totalCost - totalValue) / totalCost) * 100).toFixed(2);
     if(Object.keys(this.portfolio).length > 0 && this.portfolios.length > 0){
       this.portfolio = this.portfolios.find(portfolio => portfolio.id===this.portfolio.id);
     }
   },
-  getPortfolioDetails(id,updatePrice=false){
-    const index = this.portfolios.findIndex(portfolio => portfolio.id === id);
-    if(index >= 0){
-      let organizations = [];
-      this.portfolios[index]?.organizations?.map((portfolioOrganization) => {
-        organizations.push(portfolioOrganization.organization);
+  getPortfolioDetails(updatePrice=false){
+    let organizations = [];
+    this.portfolios.map((portfolio) => {
+      portfolio.organizations?.map((portfolioOrganization) => {
+        if(!organizations.find(org => org.code === portfolioOrganization.organization.code)){
+          organizations.push(portfolioOrganization.organization);
+        }
       });
-      this.getOrganizationDetails(organizations,updatePrice);
-    }
+    });
+    this.getOrganizationDetails(organizations,updatePrice);
   }
 });
