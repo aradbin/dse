@@ -3,7 +3,7 @@
     <Head title="Portfolio" />
     <h1 class="mb-4 text-3xl font-bold">
       My Portfolio
-      <span class="px-3 py-1 rounded text-white text-sm leading-4 font-bold whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400" :class="store.gain >= 0 ? 'bg-green-600' : 'bg-red-600'">{{ store.gain }} ({{ store.gainPercent ? store.gainPercent : 0 }}%)</span>
+      <Badge :class="(store.gain >= 0) ? 'success' : 'danger'" :text="store.gain + ' (' +store.gainPercent ? store.gainPercent : 0 + '%)'" />
       <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
     </h1>
     <div class="mt-4 mb-4">
@@ -17,14 +17,17 @@
 <script>
   import { Head, Link } from '@inertiajs/inertia-vue3'
   import Layout from '@/Shared/Layout'
+  import Badge from '@/Shared/Badge'
   import { store } from '../../store'
-  import PortfolioForm from "./PortfolioForm";
-  import Portfolios from "./Portfolios";
+  import PortfolioForm from "./PortfolioForm"
+  import Portfolios from "./Portfolios"
+
   
   export default {
     components: {
       Head,
       Link,
+      Badge,
       PortfolioForm,
       Portfolios
     },

@@ -152,14 +152,11 @@ export const store = reactive({
     this.portfolios = arr;
   },
   updatePortfolio(obj){
-    const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
-    if(index >= 0){
-      this.portfolios[index] = obj;
-    }else{
-      this.portfolios.push(obj);
+    this.portfolio = {};
+    const portfolio = this.portfolios.find(portfolio => portfolio.id === obj.id);
+    if(portfolio){
+      this.portfolio = portfolio;
     }
-    this.portfolio = obj;
-    this.syncPortfolio();
   },
   updateBrokers(arr){
     this.brokers = arr;
@@ -191,7 +188,7 @@ export const store = reactive({
     this.value = totalValue;
     this.gain = (totalCost - totalValue).toFixed(2);
     this.gainPercent = (((totalCost - totalValue) / totalCost) * 100).toFixed(2);
-    if(Object.keys(this.portfolio).length > 0 && this.portfolios.length > 0){
+    if(this.portfolio && Object.keys(this.portfolio).length > 0 && this.portfolios.length > 0){
       this.portfolio = this.portfolios.find(portfolio => portfolio.id===this.portfolio.id);
     }
   },

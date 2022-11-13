@@ -21,7 +21,7 @@ class PortfoliosController extends Controller
     {
         return [
             'brokers' => Broker::select('id','name')->get(),
-            'portfolios' => Auth::user()->portfolios()->with('organizations.organization')->get()
+            'portfolios' => Auth::user()->portfolios()->with('organizations.organization', 'transactions')->get()
         ];
     }
 

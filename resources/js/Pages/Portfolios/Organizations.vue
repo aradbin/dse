@@ -24,8 +24,12 @@
         <td class="border-t px-6 py-4">{{ org.amount * org.quantity }}</td>
         <td class="border-t px-6 py-4">{{ org.organization.price || 0 }}</td>
         <td class="border-t px-6 py-4">{{ org.organization.price ? (org.organization.price * org.quantity) : 0 }}</td>
-        <td class="border-t px-6 py-4">{{ org.organization.price ? ((org.organization.price * org.quantity) - (org.amount * org.quantity)) : (0 - (org.amount * org.quantity)) }}</td>
-        <td class="border-t px-6 py-4">{{ org.organization.price ? (((org.organization.price * org.quantity) - (org.amount * org.quantity)) / (org.amount * org.quantity) * 100).toFixed(2) : ((0 - (org.amount * org.quantity)) / (org.amount * org.quantity) * 100).toFixed(2) }}%</td>
+        <td class="border-t px-6 py-4">
+          <Badge :color="(org.amount * org.quantity) > (org.organization.price * org.quantity) ? 'danger' : 'success'" :text="org.organization.price ? ((org.organization.price * org.quantity) - (org.amount * org.quantity)) : (0 - (org.amount * org.quantity))" />
+        </td>
+        <td class="border-t px-6 py-4">
+          <Badge :color="(org.amount * org.quantity) < (org.organization.price * org.quantity) ? 'danger' : 'success'" :text="org.organization.price ? ((((org.organization.price * org.quantity) - (org.amount * org.quantity)) / (org.amount * org.quantity) * 100).toFixed(2)) : (((0 - (org.amount * org.quantity)) / (org.amount * org.quantity) * 100).toFixed(2)) + '%'" />
+        </td>
         <td class="border-t px-6 py-4">
           <button class="btn-success px-4 py-2 mr-2" @click="$emit('toggleModal',3,org.organization.id)">Buy More</button>
           <button class="btn-danger px-4 py-2" @click="$emit('toggleModal',4,org.organization.id)">Sell</button>
@@ -39,9 +43,13 @@
 </template>
 
 <script>
+import Badge from '@/Shared/Badge'
 import { store } from '../../store'
 
 export default {
+  components: {
+    Badge
+  },
   emits: ['toggleModal'],
   props: {
     

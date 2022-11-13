@@ -5,22 +5,22 @@
       {{ store.portfolio?.name }}
       <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
     </h1>
-    <div class="flex flex-row md:flex-column">
-      <div>
-        <div>Portfolio Value</div>
-        <div>{{ store.portfolio?.value || 0 }}</div>
+    <div class="grid grid-cols-4 sm:grid-cols-2 shadow">
+      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+        <span class="block text-center text-xs">Portfolio Value</span>
+        <h6 class="text-center text-2xl">{{ store.portfolio?.value || 0 }}</h6>
       </div>
-      <div>
-        <div>Gain (%)</div>
-        <div>{{ store.portfolio?.value ? (store.portfolio?.value - store.portfolio?.cost) : (0 - store.portfolio?.cost) }} ( {{ store.portfolio?.value ? (((store.portfolio?.value - store.portfolio?.cost) / store.portfolio?.cost) * 100).toFixed(2) : 0 }}% )</div>
+      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+        <span class="block text-center text-xs">Gain (%)</span>
+        <h6 class="text-center text-2xl">{{ store.portfolio?.gain || 0 }} ({{ store.portfolio?.gainPercent || 0 }}%)</h6>
       </div>
-      <div>
-        <div>Available Balance</div>
-        <div>{{ store.portfolio?.balance }}</div>
+      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+        <span class="block text-center text-xs">Available Balance</span>
+        <h6 class="text-center text-2xl">{{ store.portfolio?.balance }}</h6>
       </div>
-      <div>
-        <div>Total Assets</div>
-        <div>{{ store.portfolio?.value ? (store.portfolio?.value + store.portfolio?.balance) : store.portfolio?.balance }}</div>
+      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+        <span class="block text-center text-xs">Total Assets</span>
+        <h6 class="text-center text-2xl">{{ store.portfolio?.value ? (store.portfolio?.value + store.portfolio?.balance) : store.portfolio?.balance }}</h6>
       </div>
     </div>
     <div class="mt-4 mb-4">
@@ -67,8 +67,8 @@
       }
     },
     watch: {
-      'store.organizations'(){
-        this.getDetails();
+      'store.portfolios'(){
+        this.updatePortfolio();
       },
     },
     methods: {
@@ -80,22 +80,28 @@
         this.organization_id = organization_id;
         this.showTransactionModal = !this.showTransactionModal;
       },
-      getDetails(updatePrice=false){
-        this.store.getPortfolioDetails(this.portfolio.id,updatePrice);
-      },
-      updatePortfolios(){
+      updatePortfolio: function(){
         this.store.updatePortfolio(this.portfolio);
       }
+      // getDetails(updatePrice=false){
+      //   this.store.getPortfolioDetails(this.portfolio.id,updatePrice);
+      // },
+      // updatePortfolios(){
+      //   this.store.updatePortfolio(this.portfolio);
+      // }
     },
     mounted(){
-      this.updatePortfolios();
-      this.getDetails();
-      window.setInterval(() => {
-        let d = new Date();
-        if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
-          this.getDetails(true);
-        }
-      }, 60000);
+      if(this.store.organizations.length > 0 && this.store.portfolios.length > 0){
+        this.updatePortfolio();
+      }
+      // this.updatePortfolios();
+      // this.getDetails();
+      // window.setInterval(() => {
+      //   let d = new Date();
+      //   if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
+      //     this.getDetails(true);
+      //   }
+      // }, 60000);
     }
   }
 </script>
