@@ -104,18 +104,9 @@ export default {
           this.store.updateSectors(data.sectors);
           this.store.updateLoadingOrganizations(false);
           if(this.auth.user){
-            this.getPortfolios();
+            this.store.getPortfolios();
           }
         })
-    },
-    getPortfolios(){
-      fetch('/portfolio/all')
-        .then(response => response.json())
-        .then(data => {
-          this.store.updatePortfolios(data.portfolios);
-          this.store.updateBrokers(data.brokers);
-          this.store.getPortfolioDetails();
-        });
     }
   },
   mounted(){

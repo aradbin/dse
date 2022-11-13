@@ -55,7 +55,7 @@ export default {
         store,
       }
     },
-    emits: ['toggleModal','updatePortfolios'],
+    emits: ['toggleModal'],
     methods: {
       getTransactionType(type){
         return getTransactionTypeString(type);
@@ -65,7 +65,6 @@ export default {
             // preserveScroll: true,
             onSuccess: () => {
                 this.$emit('toggleModal');
-                this.$emit('updatePortfolios');
             },
         });
       }

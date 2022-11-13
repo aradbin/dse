@@ -148,15 +148,39 @@ export const store = reactive({
   value: 0,
   gain: 0,
   gainPercent: 0,
+  getPortfolios(){
+    fetch('/portfolio/all')
+      .then(response => response.json())
+      .then(data => {
+        this.updatePortfolios(data.portfolios);
+        this.updateBrokers(data.brokers);
+        this.getPortfolioDetails();
+      });
+  },
+  getPortfolioDetails(updatePrice=false){
+    let organizations = [];
+    this.portfolios.map((portfolio) => {
+      portfolio.organizations?.map((portfolioOrganization) => {
+        if(!organizations.find(org => org.code === portfolioOrganization.organization.code)){
+          organizations.push(portfolioOrganization.organization);
+        }
+      });
+    });
+    this.getOrganizationDetails(organizations,updatePrice);
+  },
   updatePortfolios(arr){
     this.portfolios = arr;
   },
   updatePortfolio(obj){
     this.portfolio = {};
-    const portfolio = this.portfolios.find(portfolio => portfolio.id === obj.id);
-    if(portfolio){
-      this.portfolio = portfolio;
+    const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
+    if(index >= 0){
+      this.portfolios[index] = obj;
+    }else{
+      this.portfolios.push(obj);
     }
+    this.portfolio = obj;
+    this.syncPortfolio();
   },
   updateBrokers(arr){
     this.brokers = arr;
@@ -164,6 +188,7 @@ export const store = reactive({
   syncPortfolio(){
     let totalCost = 0;
     let totalValue = 0;
+    let organizations = [];
     this.portfolios.map((portfolio,i) => {
       let portfolioCost = 0;
       let portfolioValue = 0;
@@ -174,6 +199,10 @@ export const store = reactive({
           portfolioCost = portfolioCost + (portfolioOrganization.amount * portfolioOrganization.quantity);
           if(organization.price){
             portfolioValue = portfolioValue + (organization.price * portfolioOrganization.quantity);
+          }else{
+            organizations.push(organization);
+            return this.getOrganizationDetails(organizations);
+            console.log('is properly returned');
           }
         }
       });
@@ -191,16 +220,5 @@ export const store = reactive({
     if(this.portfolio && Object.keys(this.portfolio).length > 0 && this.portfolios.length > 0){
       this.portfolio = this.portfolios.find(portfolio => portfolio.id===this.portfolio.id);
     }
-  },
-  getPortfolioDetails(updatePrice=false){
-    let organizations = [];
-    this.portfolios.map((portfolio) => {
-      portfolio.organizations?.map((portfolioOrganization) => {
-        if(!organizations.find(org => org.code === portfolioOrganization.organization.code)){
-          organizations.push(portfolioOrganization.organization);
-        }
-      });
-    });
-    this.getOrganizationDetails(organizations,updatePrice);
   }
 });

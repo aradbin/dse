@@ -31,8 +31,8 @@
     </div>
   </div>
 
-  <PortfolioForm v-if="showModal" :brokers="brokers" @toggleModal="toggleModal" @updatePortfolios="updatePortfolios" />
-  <TransactionForm v-if="showTransactionModal" :type="type" :organization_id="organization_id" :portfolio="portfolio" @toggleModal="toggleTransactionModal" @updatePortfolios="updatePortfolios" />
+  <PortfolioForm v-if="showModal" @toggleModal="toggleModal" />
+  <TransactionForm v-if="showTransactionModal" :type="type" :organization_id="organization_id" :portfolio="portfolio" @toggleModal="toggleTransactionModal" />
 </template>
   
 <script>
@@ -83,25 +83,11 @@
       updatePortfolio: function(){
         this.store.updatePortfolio(this.portfolio);
       }
-      // getDetails(updatePrice=false){
-      //   this.store.getPortfolioDetails(this.portfolio.id,updatePrice);
-      // },
-      // updatePortfolios(){
-      //   this.store.updatePortfolio(this.portfolio);
-      // }
     },
     mounted(){
       if(this.store.organizations.length > 0 && this.store.portfolios.length > 0){
         this.updatePortfolio();
       }
-      // this.updatePortfolios();
-      // this.getDetails();
-      // window.setInterval(() => {
-      //   let d = new Date();
-      //   if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
-      //     this.getDetails(true);
-      //   }
-      // }, 60000);
     }
   }
 </script>
