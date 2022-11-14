@@ -22,7 +22,7 @@
         <!-- <td class="border-t px-6 py-4">{{ item.organization_id && item.organization_id }}</td> -->
         <td class="border-t px-6 py-4">{{ item.quantity }}</td>
         <td class="border-t px-6 py-4">{{ item.commission }}</td>
-        <td class="border-t px-6 py-4">{{ item.name }}</td>
+        <td class="border-t px-6 py-4">{{ item.name || 'N/A' }}</td>
         
       </tr>
       <tr v-if="transactions?.length === 0">
