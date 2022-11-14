@@ -20,7 +20,7 @@
         <td class="border-t px-6 py-4">{{ item.commission }} %</td>
         <td class="border-t px-6 py-4">{{ item.balance }}</td>
         <td class="border-t px-6 py-4">
-          <span class="px-3 py-1 rounded text-white text-sm leading-4 font-bold whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400" :class="item.gain >= 0 ? 'bg-green-600' : 'bg-red-600'">{{ item.gain }} ({{ item.gainPercent ? item.gainPercent : 0 }}%)</span>
+          <span class="badge" :class="(!item.gain || item.gain >= 0) ? 'badge-success' : 'badge-danger'">{{ item.gain || 0 }} ({{ (item.gainPercent && !isNaN(item.gainPercent)) ? item.gainPercent : 0 }}%)</span>
         </td>
         <td class="border-t px-6 py-4"><Link class="btn-indigo px-4 py-2" :href="'/portfolio/'+item.id">Details</Link></td>
       </tr>

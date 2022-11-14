@@ -1,0 +1,11 @@
+.badge {
+  @apply px-3 py-1 rounded text-white text-sm leading-4 font-bold whitespace-nowrap;
+}
+
+.badge-success {
+  @apply bg-green-600;
+}
+
+.badge-danger {
+  @apply bg-red-600;
+}

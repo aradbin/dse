@@ -6,21 +6,21 @@
       <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
     </h1>
     <div class="grid grid-cols-4 sm:grid-cols-2 shadow">
-      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+      <div class="text-center px-3 py-2 font-bold text-white border border-solid" :class="store.portfolio?.value < 0 ? 'bg-red-600' : 'bg-green-600'">
         <span class="block text-center text-xs">Portfolio Value</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.value || 0 }}</h6>
+        <h6 class="text-center text-2xl">{{ store.portfolio?.value ? store.portfolio?.value.toFixed(2) : 0 }}</h6>
       </div>
-      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+      <div class="text-center px-3 py-2 font-bold text-white border border-solid" :class="(!store.portfolio?.gain || store.portfolio?.gain < 0) ? 'bg-red-600' : 'bg-green-600'">
         <span class="block text-center text-xs">Gain (%)</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.gain || 0 }} ({{ store.portfolio?.gainPercent || 0 }}%)</h6>
+        <h6 class="text-center text-2xl">{{ store.portfolio?.gain || 0 }} ({{ (store.portfolio?.gainPercent && !isNaN(store.portfolio?.gainPercent)) ? store.portfolio?.gainPercent : 0 }}%)</h6>
       </div>
-      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+      <div class="text-center px-3 py-2 font-bold text-white border border-solid" :class="store.portfolio?.balance < 0 ? 'bg-red-600' : 'bg-green-600'">
         <span class="block text-center text-xs">Available Balance</span>
         <h6 class="text-center text-2xl">{{ store.portfolio?.balance }}</h6>
       </div>
-      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+      <div class="text-center px-3 py-2 font-bold text-white border border-solid" :class="store.portfolio?.value + store.portfolio?.balance < 0 ? 'bg-red-600' : 'bg-green-600'">
         <span class="block text-center text-xs">Total Assets</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.value ? (store.portfolio?.value + store.portfolio?.balance) : store.portfolio?.balance }}</h6>
+        <h6 class="text-center text-2xl">{{ store.portfolio?.value ? (store.portfolio?.value + store.portfolio?.balance).toFixed(2) : store.portfolio?.balance }}</h6>
       </div>
     </div>
     <div class="mt-4 mb-4">
@@ -70,6 +70,13 @@
       'store.portfolios'(){
         this.updatePortfolio();
       },
+      // portfolio: {
+      //   deep: true,
+      //   handler: function () {
+      //     store.updateQuery(this.form);
+      //     this.getDetails();
+      //   },
+      // }
     },
     methods: {
       toggleModal: function(){
