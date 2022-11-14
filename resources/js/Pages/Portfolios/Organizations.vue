@@ -43,13 +43,9 @@
 </template>
 
 <script>
-import Badge from '@/Shared/Badge'
 import { store } from '../../store'
 
 export default {
-  components: {
-    Badge
-  },
   emits: ['toggleModal'],
   props: {
     
