@@ -13,9 +13,8 @@
         <th class="pb-4 pt-6 px-6">Total Cost</th>
         <th class="pb-4 pt-6 px-6">Market Price</th>
         <th class="pb-4 pt-6 px-6">Market Value</th>
-        <th class="pb-4 pt-6 px-6">Gain</th>
-        <th class="pb-4 pt-6 px-6">Gain (%)</th>
-        <th class="pb-4 pt-6 px-6">Action</th>
+        <th class="pb-4 pt-6 px-6">Unrealized Gain (%)</th>
+        <th class="pb-4 pt-6 px-6">Actions</th>
       </tr>
       <tr v-for="org in store.portfolio.organizations" :key="org.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
         <td class="border-t px-6 py-4">{{ org.organization.code }}</td>
@@ -25,10 +24,10 @@
         <td class="border-t px-6 py-4">{{ org.organization.price || 0 }}</td>
         <td class="border-t px-6 py-4">{{ org.organization.price ? (org.organization.price * org.quantity) : 0 }}</td>
         <td class="border-t px-6 py-4">
-          <span class="badge" :class="(!org.organization.price || (org.amount > org.organization.price)) ? 'badge-danger' : 'badge-success'">{{ org.organization.price ? ((org.organization.price * org.quantity) - (org.amount * org.quantity)).toFixed(2) : (0 - (org.amount * org.quantity)).toFixed(2) }}</span>
-        </td>
-        <td class="border-t px-6 py-4">
-          <span class="badge" :class="(!org.organization.price || (org.amount > org.organization.price)) ? 'badge-danger' : 'badge-success'">{{ org.organization.price ? ((((org.organization.price * org.quantity) - (org.amount * org.quantity)) / (org.amount * org.quantity) * 100).toFixed(2)) : (((0 - (org.amount * org.quantity)) / (org.amount * org.quantity) * 100).toFixed(2)) }}%</span>
+          <span class="badge" :class="(!org.organization.price || (org.amount > org.organization.price)) ? 'badge-danger' : 'badge-success'">
+            {{ org.organization.price ? ((org.organization.price * org.quantity) - (org.amount * org.quantity)).toFixed(2) : (0 - (org.amount * org.quantity)).toFixed(2) }}
+            ({{ org.organization.price ? ((((org.organization.price * org.quantity) - (org.amount * org.quantity)) / (org.amount * org.quantity) * 100).toFixed(2)) : (((0 - (org.amount * org.quantity)) / (org.amount * org.quantity) * 100).toFixed(2)) }}%)
+          </span>
         </td>
         <td class="border-t px-6 py-4">
           <button class="btn-success px-4 py-2 mr-2" @click="$emit('toggleModal',3,org.organization.id)">Buy More</button>

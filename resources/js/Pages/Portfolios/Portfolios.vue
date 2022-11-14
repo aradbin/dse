@@ -8,9 +8,9 @@
         <th class="pb-4 pt-6 px-6">Broker</th>
         <th class="pb-4 pt-6 px-6">Broker User ID</th>
         <th class="pb-4 pt-6 px-6">Commission (%)</th>
-        <th class="pb-4 pt-6 px-6">Balance</th>
-        <th class="pb-4 pt-6 px-6">Gain</th>
-        <th class="pb-4 pt-6 px-6">Action</th>
+        <th class="pb-4 pt-6 px-6">Available Balance</th>
+        <th class="pb-4 pt-6 px-6">Unrealized Gain (%)</th>
+        <th class="pb-4 pt-6 px-6">Actions</th>
       </tr>
       <tr v-for="item in portfolios" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
         <td class="border-t px-6 py-4">{{ item.name }}</td>
