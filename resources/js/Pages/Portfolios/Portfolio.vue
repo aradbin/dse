@@ -70,13 +70,12 @@
       'store.portfolios'(){
         this.updatePortfolio();
       },
-      // portfolio: {
-      //   deep: true,
-      //   handler: function () {
-      //     store.updateQuery(this.form);
-      //     this.getDetails();
-      //   },
-      // }
+      portfolio: {
+        deep: true,
+        handler: function () {
+          this.updatePortfolio();
+        },
+      }
     },
     methods: {
       toggleModal: function(){
