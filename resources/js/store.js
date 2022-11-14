@@ -39,11 +39,11 @@ export const store = reactive({
           .then(data => {
             let total_dividend = 0;
             let avg_dividend = 0;
-            if(org?.dividends?.length>0){
-              org.dividends.map(function(dividend){
+            if(org?.dividends && JSON.parse(org?.dividends).length>0){
+              JSON.parse(org?.dividends).map(function(dividend){
                 total_dividend = total_dividend + dividend.cash;
               });
-              avg_dividend = (((total_dividend/org.dividends.length)/10)/data.LastTrade)*100;
+              avg_dividend = (((total_dividend/JSON.parse(org?.dividends).length)/10)/data.LastTrade)*100;
             }
             this.updateOrganization({
               'id' : org.id,
@@ -66,7 +66,7 @@ export const store = reactive({
               'marketCap' : data.MarketCap,
               'website' : data.Web,
               'is_watch_listed' : org.is_watch_listed,
-              'dividends': org.dividends,
+              'dividends': JSON.stringify(org.dividends),
               'avg_dividend': avg_dividend.toFixed(2)
             });
           });
@@ -201,8 +201,6 @@ export const store = reactive({
             portfolioValue = portfolioValue + (organization.price * portfolioOrganization.quantity);
           }else{
             organizations.push(organization);
-            return this.getOrganizationDetails(organizations);
-            console.log('is properly returned');
           }
         }
       });
