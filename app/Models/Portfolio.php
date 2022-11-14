@@ -19,9 +19,14 @@ class Portfolio extends Model
         return $this->belongsTo(Broker::class);
     }
 
-    public function transactions()
+    public function allTransactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function transactions()
+    {
+        return $this->allTransactions()->orderBy('created_at','desc');
     }
 
     public function organizations()
