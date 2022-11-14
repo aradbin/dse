@@ -22,10 +22,13 @@ class CreatePortfoliosTable extends Migration
             $table->integer('broker_id')->unsigned()->nullable();
             $table->foreign('broker_id')->references('id')->on('brokers');
             $table->string('broker_user_id')->nullable();
-            // $table->integer('account_id')->unsigned();
-            // $table->foreign('account_id')->references('id')->on('accounts');
             $table->float('commission')->default(0.5)->comment('in percentage');
             $table->float('balance')->default(0);
+            $table->float('realized_gain')->default(0);
+            $table->float('paid_commission')->default(0);
+            $table->float('paid_charge')->default(0);
+            $table->float('cash_dividend')->default(0);
+            $table->float('paid_tax')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

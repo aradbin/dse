@@ -27,7 +27,11 @@ class TransactionsController extends Controller
             ]);
             
             $balanceAdjustment = 0;
+            $gainAdjustment = 0;
             $commission = 0;
+            $charge = 0;
+            $dividend = 0;
+            $tax = 0;
             $cost = Request::get('amount') * Request::get('quantity');
 
             if(Request::get('type')==1){ // Deposit
@@ -35,14 +39,14 @@ class TransactionsController extends Controller
             }else if(Request::get('type')==2){ // Withdraw
                 $balanceAdjustment = 0 - Request::get('amount');
             }else if(Request::get('type')==3){ // Buy
-                $commission = (Request::get('amount') * Request::get('quantity')) * ($portfolio->commission / 100);
+                $commission = $cost * ($portfolio->commission / 100);
                 Request::validate([
                     'amount' => ['numeric', Rule::when($portfolio->balance < ($cost + $commission), ['max:0'])],
                 ],[
                     'amount.max' => 'Insufficient balance'
                 ]);
                 $balanceAdjustment = 0 - ($cost + $commission);
-                $organization = $portfolio->organizations()->find(Request::get('organization_id'));
+                $organization = $portfolio->organizations()->where('organization_id',Request::get('organization_id'))->first();
                 if($organization){
                     $organization->amount = (($organization->amount * $organization->quantity) + $cost) / ($organization->quantity + Request::get('quantity'));
                     $organization->quantity = $organization->quantity + Request::get('quantity');
@@ -55,7 +59,7 @@ class TransactionsController extends Controller
                     ]);
                 }
             }else if(Request::get('type')==4){ // Sell
-                $organization = $portfolio->organizations()->find(Request::get('organization_id'));
+                $organization = $portfolio->organizations()->where('organization_id',Request::get('organization_id'))->first();
                 Request::validate([
                     'organization' => ['numeric', Rule::when(!$organization, ['max:0'])],
                     'quantity' => ['numeric', Rule::when($organization, ["max:$organization->quantity"])]
@@ -63,16 +67,26 @@ class TransactionsController extends Controller
                     'organization.max' => "Organization doesn't exist on your portfolio",
                     'quantity.max' => "Insufficient quantity to sell",
                 ]);
-                $commission = (Request::get('amount') * Request::get('quantity')) * ($portfolio->commission / 100);
+                $commission = $cost * ($portfolio->commission / 100);
                 $balanceAdjustment = $cost - $commission;
+                $gainAdjustment = $cost - $commission - ($organization->amount * $organization->quantity);
                 $organization->quantity = $organization->quantity - Request::get('quantity');
-                $organization->save();
+                if($organization->quantity==0){
+                    $organization->delete();
+                }else{
+                    $organization->save();
+                }
             }else if(Request::get('type')==5){ // BO Charge
                 $balanceAdjustment = 0 - Request::get('amount');
+                $charge = Request::get('amount');
             }else if(Request::get('type')==6){ // IPO Charge
                 $balanceAdjustment = 0 - Request::get('amount');
+                $charge = Request::get('amount');
             }else if(Request::get('type')==7){ // Cash Dividend
-                $balanceAdjustment = Request::get('amount') - Request::get('tax');
+                $dividend = $cost;
+                $tax = Request::get('tax');
+            }else if(Request::get('type')==8){ // Stock Dividend
+                
             }
 
             $transaction = $portfolio->transactions()->create([
@@ -82,10 +96,15 @@ class TransactionsController extends Controller
                 'amount' => Request::get('amount'),
                 'quantity' => Request::get('quantity'),
                 'commission' => $commission,
-                'tax' => 0,
+                'tax' => $tax,
             ]);
 
             $portfolio->balance = $portfolio->balance + $balanceAdjustment;
+            $portfolio->realized_gain = $portfolio->realized_gain + $gainAdjustment;
+            $portfolio->paid_commission = $portfolio->paid_commission + $commission;
+            $portfolio->paid_charge = $portfolio->paid_charge + $charge;
+            $portfolio->cash_dividend = $portfolio->cash_dividend + $dividend;
+            $portfolio->paid_tax = $portfolio->paid_tax + $tax;
             $portfolio->save();
 
             return Redirect::back()->with('success', 'Transaction created');
