@@ -121,7 +121,11 @@ Route::put('organizations/{organization}/restore', [OrganizationsController::cla
     ->name('organizations.restore')
     ->middleware('auth');
 
-Route::get('organizations/sync', [OrganizationsController::class, 'sync'])
+Route::get('organizations/sync/dse', [OrganizationsController::class, 'syncFromDse'])
+    ->name('organizations.sync')
+    ->middleware('auth');
+
+Route::get('organizations/sync/amarstock', [OrganizationsController::class, 'syncFromAmarStock'])
     ->name('organizations.sync')
     ->middleware('auth');
 

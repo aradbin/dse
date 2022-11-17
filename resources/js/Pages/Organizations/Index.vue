@@ -43,10 +43,10 @@
           </select>
         </div>
       </search-filter>
-      <!-- <Link class="btn-indigo" href="/organizations/sync" v-if="auth.user && auth.user.owner==1">
+      <Link class="btn-indigo" href="/organizations/sync/amarstock" v-if="auth.user && auth.user.owner==1">
         <span>Sync</span>
         <span class="hidden md:inline">&nbsp;Organizations</span>
-      </Link> -->
+      </Link>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
       <card v-for="organization in this.store.filteredOrganizationsByPage" :key="organization.id" :organization="organization" />

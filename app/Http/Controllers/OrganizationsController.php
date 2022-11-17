@@ -128,7 +128,7 @@ class OrganizationsController extends Controller
         return true;
     }
 
-    public function sync()
+    public function syncFromDse()
     {
         set_time_limit(0);
         // // DSEX
@@ -178,10 +178,12 @@ class OrganizationsController extends Controller
             
             foreach($table as $index => $tr){
                 if($index>0){
-                    Organization::firstOrCreate(
+                    Organization::updateOrCreate(
                         [
                             'account_id' => 1,
                             'code' => $tr[1],
+                        ],
+                        [
                             'category' => $category
                         ]
                     );
@@ -264,7 +266,55 @@ class OrganizationsController extends Controller
             }
         }
 
-        // Dividend History
+        return 'Success';
+    }
+
+    public function syncFromAmarStock()
+    {
+        set_time_limit(0);
+        
+        $ch = curl_init("https://www.amarstock.com/LatestPrice/34267d8d73dd");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $content = curl_exec($ch);
+        curl_close($ch);
+        $organizations = json_decode($content);
+        foreach($organizations as $item){
+            $item = (array) $item;
+            Organization::updateOrCreate(
+                [
+                    'account_id' => 1,
+                    'code' => $item['Scrip'],
+                ],
+                [
+                    'name' -> $item['FullName'],
+                    'category' => $item['MarketCategory'],
+                    'instrument_type' => $item['InstrumentType'],
+                    'sector' => $item['BusinessSegment'],
+                    'market_cap' => $item['MarketCap'],
+                    'authorized_cap' => $item['AuthorizedCap'],
+                    'paidup_cap' => $item['PaidUpCap'],
+                    'shares' => $item['TotalSecurities'],
+                    'director' => $item['SponsorDirector'],
+                    'govt' => $item['Govt'],
+                    'institute' => $item['Institute'],
+                    'foreign' => $item['Foreign'],
+                    'public' => $item['Public'],
+                    'eps' => $item['Eps'],
+                    'floor_price' => $item['FloorPrice'],
+                    'price' => $item['LTP'],
+                    'pe' => $item['AuditedPE'],
+                    'upe' => $item['UnAuditedPE'],
+                    'nav' => $item['NAV'],
+                ]
+            );
+        }
+
+        return 'success';
+    }
+
+    public function syncDividend(Type $var = null)
+    {
         $organizations = Organization::get();
         foreach($organizations as $organization){
             $ch = curl_init("https://www.amarstock.com/company/a4e5-dd034dc69f8a/?symbol=".$organization->code);
@@ -274,18 +324,18 @@ class OrganizationsController extends Controller
             curl_close($ch);
 
             foreach(json_decode($content) as $dividend){
-                Dividend::firstOrCreate([
+                Dividend::updateOrCreate([
                     'organization_id' => $organization->id,
+                    'year' => $dividend->y,
+                ],[
                     'cash' => $dividend->c,
                     'stock' => $dividend->d,
                     'eps' => $dividend->e,
-                    'year' => $dividend->y,
                 ]);
             }
         }
 
-        // return Redirect::route('organizations');
-        return 'Success';
+        return 'success';
     }
 
     public function show($name)
