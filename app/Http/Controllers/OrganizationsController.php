@@ -24,8 +24,7 @@ class OrganizationsController extends Controller
     public function all()
     {
         $query = Organization::where('organizations.account_id',1)
-            ->orderBy('organizations.code')
-            ->select('organizations.id','organizations.code','organizations.category','organizations.sector');
+            ->orderBy('organizations.code');
         if(Auth::user()){
             $query->with('dividends','isWatchListed');
         }else{
@@ -60,6 +59,28 @@ class OrganizationsController extends Controller
         );
 
         return Redirect::route('organizations')->with('success', 'Organization created.');
+    }
+
+    public function show($name)
+    {
+        $ch = curl_init("https://www.amarstock.com/data/1258dca00155/".$name);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $content = curl_exec($ch);
+        curl_close($ch);
+        
+        return $content;
+    }
+
+    public function showAll()
+    {
+        $ch = curl_init("https://www.amarstock.com/LatestPrice/34267d8d73dd");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $content = curl_exec($ch);
+        curl_close($ch);
+        
+        return $content;
     }
 
     public function edit(Organization $organization)
@@ -131,32 +152,6 @@ class OrganizationsController extends Controller
     public function syncFromDse()
     {
         set_time_limit(0);
-        // // DSEX
-        // $ch = curl_init("https://www.dsebd.org/dseX_share.php");
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        // $content = curl_exec($ch);
-        // curl_close($ch);
-
-        // $crawler = new Crawler(
-        //     (string) $content
-        // );
-        // $table = $crawler->filter('table.shares-table')->filter('tr')->each(function ($tr, $i) {
-        //     return $tr->filter('td')->each(function ($td, $i) {
-        //         return trim($td->text());
-        //     });
-        // });
-        
-        // foreach($table as $index => $tr){
-        //     if($index>0){
-        //         Organization::firstOrCreate(
-        //             [
-        //                 'account_id' => 1,
-        //                 'code' => $tr[1]
-        //             ]
-        //         );
-        //     }
-        // }
 
         // DSE By Category
         $categories = ['A','B','G','N','Z'];
@@ -209,11 +204,7 @@ class OrganizationsController extends Controller
         
         foreach($table as $index => $tr){
             if($index>0){
-                Organization::updateOrCreate(
-                    [
-                        'account_id' => 1,
-                        'code' => $tr[1]
-                    ],
+                Organization::where('account_id',1)->where('code',$tr[1])->update(
                     [
                         'se_index' => 'DS30'
                     ]
@@ -256,7 +247,7 @@ class OrganizationsController extends Controller
             foreach($table as $index => $tr){
                 if($index==0){
                     foreach($tr as $td){
-                        Organization::where('code',$td)->update(
+                        Organization::where('account_id',1)->where('code',$td)->update(
                             [
                                 'sector' => $sector['name']
                             ]
@@ -279,15 +270,12 @@ class OrganizationsController extends Controller
         $content = curl_exec($ch);
         curl_close($ch);
         $organizations = json_decode($content);
+        
         foreach($organizations as $item){
             $item = (array) $item;
-            Organization::updateOrCreate(
+            Organization::where('account_id',1)->where('code',$item['Scrip'])->update(
                 [
-                    'account_id' => 1,
-                    'code' => $item['Scrip'],
-                ],
-                [
-                    'name' -> $item['FullName'],
+                    'name' => $item['FullName'],
                     'category' => $item['MarketCategory'],
                     'instrument_type' => $item['InstrumentType'],
                     'sector' => $item['BusinessSegment'],
@@ -313,8 +301,10 @@ class OrganizationsController extends Controller
         return 'success';
     }
 
-    public function syncDividend(Type $var = null)
+    public function syncDividend()
     {
+        set_time_limit(0);
+
         $organizations = Organization::get();
         foreach($organizations as $organization){
             $ch = curl_init("https://www.amarstock.com/company/a4e5-dd034dc69f8a/?symbol=".$organization->code);
@@ -336,16 +326,5 @@ class OrganizationsController extends Controller
         }
 
         return 'success';
-    }
-
-    public function show($name)
-    {
-        $ch = curl_init("https://www.amarstock.com/data/1258dca00155/".$name);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        $content = curl_exec($ch);
-        curl_close($ch);
-        
-        return $content;
     }
 }

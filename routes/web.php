@@ -105,6 +105,10 @@ Route::get('organizations/show/{code}', [OrganizationsController::class, 'show']
     ->name('organizations.show');
     // ->middleware('guest');
 
+Route::get('organizations/showAll', [OrganizationsController::class, 'showAll'])
+    ->name('organizations.show');
+    // ->middleware('guest');
+
 Route::get('organizations/{organization}/edit', [OrganizationsController::class, 'edit'])
     ->name('organizations.edit')
     ->middleware('auth');
@@ -126,6 +130,10 @@ Route::get('organizations/sync/dse', [OrganizationsController::class, 'syncFromD
     ->middleware('auth');
 
 Route::get('organizations/sync/amarstock', [OrganizationsController::class, 'syncFromAmarStock'])
+    ->name('organizations.sync')
+    ->middleware('auth');
+
+Route::get('organizations/sync/amarstock/dividend', [OrganizationsController::class, 'syncDividend'])
     ->name('organizations.sync')
     ->middleware('auth');
 
