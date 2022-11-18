@@ -43,10 +43,10 @@
           </select>
         </div>
       </search-filter>
-      <Link class="btn-indigo" href="/organizations/sync/amarstock" v-if="auth.user && auth.user.owner==1">
+      <!-- <Link class="btn-indigo" href="/organizations/sync/amarstock" v-if="auth.user && auth.user.owner==1">
         <span>Sync</span>
         <span class="hidden md:inline">&nbsp;Organizations</span>
-      </Link>
+      </Link> -->
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
       <card v-for="organization in this.store.filteredOrganizationsByPage" :key="organization.id" :organization="organization" />
@@ -95,13 +95,11 @@ export default {
   watch: {
     'store.organizations'(){
       store.updateQuery(this.form);
-      this.getDetails();
     },
     form: {
       deep: true,
       handler: throttle(function () {
         store.updateQuery(this.form);
-        this.getDetails();
       }, 150),
     }
   },
@@ -120,9 +118,6 @@ export default {
     changePage(page){
       this.form.current_page = page;
     },
-    getDetails(updatePrice=false){
-      this.store.getOrganizationDetails(this.store.filteredOrganizationsByPage,updatePrice);
-    },
     isUrl(url) {
       if(this.$page.url.substr(1)===url){
         return true;
@@ -138,14 +133,13 @@ export default {
     }
     if(this.store.organizations.length > 0){
       this.store.updateQuery(this.form);
-      this.getDetails();
     }
-    window.setInterval(() => {
-      let d = new Date();
-      if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
-        this.getDetails(true);
-      }
-    }, 60000);
+    // window.setInterval(() => {
+    //   let d = new Date();
+    //   if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
+    //     this.getDetails(true);
+    //   }
+    // }, 60000);
   }
 }
 </script>

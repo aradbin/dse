@@ -8,6 +8,14 @@ export const store = reactive({
   updateOrganizations(arr){
     this.organizations = arr;
   },
+  updateOrganization(obj){
+    const index = this.organizations.findIndex(org => org.code === obj.code);
+    if(index >= 0){
+      this.organizations[index] = obj;
+    }
+    this.filterOrganizations(this.query);
+    this.syncPortfolio();
+  },
   updateLoadingOrganizations(bool){
     this.loadingOrganizations = bool;
   },
@@ -22,6 +30,49 @@ export const store = reactive({
       this.organizations[index].is_watch_listed = { 'organization_id': obj.id };
     }
     this.filterOrganizations(this.query);
+  },
+  async getOrganizationDetails(organizations=[],updatePrice=false){
+    await Promise.all(organizations.map((org) => {
+      if(updatePrice || !org.price){
+        return fetch('/organizations/show/' + org.code)
+          .then(response => response.json())
+          .then(data => {
+            let total_dividend = 0;
+            let avg_dividend = 0;
+            if(org?.dividends && JSON.parse(org?.dividends).length>0){
+              JSON.parse(org?.dividends).map(function(dividend){
+                total_dividend = total_dividend + dividend.cash;
+              });
+              avg_dividend = (((total_dividend/JSON.parse(org?.dividends).length)/10)/data.LastTrade)*100;
+            }
+            this.updateOrganization({
+              'id' : org.id,
+              'code' : org.code,
+              'name' : data.FullName,
+              'category' : data.MarketCategory,
+              'sector' : org.sector,
+              'price' : data.LastTrade,
+              'eps' : data.EPS,
+              'pe' : data.AuditedPE,
+              'upe' : data.UnAuditedPE,
+              'pnav' : data.NavPrice,
+              'pepnav' : (data.AuditedPE * data.NavPrice).toFixed(2),
+              'upepnav' : (data.UnAuditedPE * data.NavPrice).toFixed(2),
+              'div' : data.DividentYield,
+              'agm' : data.LastAGMHeld,
+              'listingYear' : data.ListingYear,
+              'longLoan' : data.LongLoan,
+              'shortLoan' : data.ShortLoan,
+              'marketCap' : data.MarketCap,
+              'website' : data.Web,
+              'is_watch_listed' : org.is_watch_listed,
+              'dividends': JSON.stringify(org.dividends),
+              'avg_dividend': avg_dividend.toFixed(2)
+            });
+          });
+      }
+      return true;
+    }));
   },
   
 
@@ -103,11 +154,22 @@ export const store = reactive({
       .then(data => {
         this.updatePortfolios(data.portfolios);
         this.updateBrokers(data.brokers);
+        this.getPortfolioDetails();
       });
+  },
+  getPortfolioDetails(updatePrice=false){
+    let organizations = [];
+    this.portfolios.map((portfolio) => {
+      portfolio.organizations?.map((portfolioOrganization) => {
+        if(!organizations.find(org => org.code === portfolioOrganization.organization.code)){
+          organizations.push(portfolioOrganization.organization);
+        }
+      });
+    });
+    this.getOrganizationDetails(organizations,updatePrice);
   },
   updatePortfolios(arr){
     this.portfolios = arr;
-    this.syncPortfolio();
   },
   updatePortfolio(obj){
     this.portfolio = {};
@@ -126,6 +188,7 @@ export const store = reactive({
   syncPortfolio(){
     let totalCost = 0;
     let totalValue = 0;
+    let organizations = [];
     this.portfolios.map((portfolio,i) => {
       let portfolioCost = 0;
       let portfolioValue = 0;
@@ -136,6 +199,8 @@ export const store = reactive({
           portfolioCost = portfolioCost + (portfolioOrganization.amount * portfolioOrganization.quantity);
           if(organization.price){
             portfolioValue = portfolioValue + (organization.price * portfolioOrganization.quantity);
+          }else{
+            organizations.push(organization);
           }
         }
       });

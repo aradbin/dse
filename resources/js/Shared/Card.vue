@@ -5,13 +5,13 @@
       {{ organization.code }}
       <span class="float-right cursor-pointer" v-on:click="toggleModal()"><i class="fa-solid fa-circle-info"></i></span>
     </div>
-    <div class="px-3 py-2 font-bold text-white border border-solid" :class="(organization.pnav<1.5 && organization.pe<15 && organization.upe<15 && organization.pepnav<22.5 && organization.upepnav<22.5 && organization.div>0) ? (organization.pe>10 || organization.upe>10 || organization.div<5 ? 'bg-orange-600' : 'bg-green-600') : 'bg-red-600'">
+    <div class="px-3 py-2 font-bold text-white border border-solid" :class="((organization.nav / organization.price)<1.5 && organization.pe<15 && organization.upe<15 && (organization.pe * (organization.nav / organization.price))<22.5 && (organization.upe * (organization.nav / organization.price))<22.5 && organization.div>0) ? (organization.pe>10 || organization.upe>10 || organization.div<5 ? 'bg-orange-600' : 'bg-green-600') : 'bg-red-600'">
       <span class="block text-center text-xs">Price</span>
       <h4 class="text-center text-2xl">{{ organization.price }}</h4>
     </div>
-    <div class="px-3 py-2 font-bold text-white border border-solid" :class="organization.pnav<1.5 ? 'bg-green-600' : 'bg-red-600'">
+    <div class="px-3 py-2 font-bold text-white border border-solid" :class="(organization.nav / organization.price)<1.5 ? 'bg-green-600' : 'bg-red-600'">
       <span class="block text-center text-xs">P/NAV</span>
-      <h4 class="text-center text-2xl">{{ organization.pnav }}</h4>
+      <h4 class="text-center text-2xl">{{ (organization.nav / organization.price).toFixed(2) }}</h4>
     </div>
     <div class="px-3 py-2 font-bold text-white border border-solid" :class="organization.pe<15 ? (organization.pe<10 ? 'bg-green-600' : 'bg-orange-600') : 'bg-red-600'">
       <span class="block text-center text-xs">P/E</span>
@@ -21,13 +21,13 @@
       <span class="block text-center text-xs">U P/E</span>
       <h4 class="text-center text-2xl">{{ organization.upe }}</h4>
     </div>
-    <div class="px-3 py-2 font-bold text-white border border-solid" :class="organization.pepnav<22.5 ? 'bg-green-600' : 'bg-red-600'">
+    <div class="px-3 py-2 font-bold text-white border border-solid" :class="(organization.pe * (organization.nav / organization.price))<22.5 ? 'bg-green-600' : 'bg-red-600'">
       <span class="block text-center text-xs">P/E * P/NAV</span>
-      <h4 class="text-center text-2xl">{{ organization.pepnav }}</h4>
+      <h4 class="text-center text-2xl">{{ (organization.pe * (organization.nav / organization.price)).toFixed(2) }}</h4>
     </div>
-    <div class="px-3 py-2 font-bold text-white border border-solid" :class="organization.upepnav<22.5 ? 'bg-green-600' : 'bg-red-600'">
+    <div class="px-3 py-2 font-bold text-white border border-solid" :class="(organization.upe * (organization.nav / organization.price))<22.5 ? 'bg-green-600' : 'bg-red-600'">
       <span class="block text-center text-xs">U P/E * P/NAV</span>
-      <h4 class="text-center text-2xl">{{ organization.upepnav }}</h4>
+      <h4 class="text-center text-2xl">{{ (organization.upe * (organization.nav / organization.price)).toFixed(2) }}</h4>
     </div>
     <div class="px-3 py-2 font-bold text-white border border-solid" :class="organization.div>0 ? (organization.div>5 ? 'bg-green-600' : 'bg-orange-600') : 'bg-red-600'">
       <span class="block text-center text-xs">Dividend Yield</span>
