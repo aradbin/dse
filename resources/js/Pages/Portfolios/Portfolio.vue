@@ -12,7 +12,7 @@
       </div>
       <div class="text-center px-3 py-2 font-bold text-white border border-solid" :class="(!store.portfolio?.gain || store.portfolio?.gain < 0) ? 'bg-red-600' : 'bg-green-600'">
         <span class="block text-center text-xs">Gain (%)</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.gain || 0 }} ({{ (store.portfolio?.gainPercent && !isNaN(store.portfolio?.gainPercent)) ? store.portfolio?.gainPercent : 0 }}%)</h6>
+        <h6 class="text-center text-2xl">{{ store.portfolio?.gain || 0 }} ({{ store.portfolio?.gainPercent }}%)</h6>
       </div>
       <div class="text-center px-3 py-2 font-bold text-white border border-solid" :class="store.portfolio?.balance < 0 ? 'bg-red-600' : 'bg-green-600'">
         <span class="block text-center text-xs">Available Balance</span>

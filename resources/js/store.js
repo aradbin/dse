@@ -143,6 +143,7 @@ export const store = reactive({
       this.portfolios[i].value = portfolioValue;
       this.portfolios[i].gain = (portfolioValue - portfolioCost).toFixed(2);
       this.portfolios[i].gainPercent = (((portfolioValue - portfolioCost) / portfolioCost) * 100).toFixed(2);
+      if(isNaN(this.portfolios[i].gainPercent)){ this.portfolios[i].gainPercent = 0 };
       totalCost = totalCost + portfolioCost;
       totalValue = totalValue + portfolioValue;
     });
@@ -150,6 +151,7 @@ export const store = reactive({
     this.value = totalValue;
     this.gain = (totalValue - totalCost).toFixed(2);
     this.gainPercent = (((totalValue - totalCost) / totalCost) * 100).toFixed(2);
+    if(isNaN(this.gainPercent)){ this.gainPercent = 0 };
     if(this.portfolio && Object.keys(this.portfolio).length > 0 && this.portfolios.length > 0){
       this.portfolio = this.portfolios.find(portfolio => portfolio.id===this.portfolio.id);
     }

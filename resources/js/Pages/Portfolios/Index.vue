@@ -3,7 +3,7 @@
     <Head title="Portfolio" />
     <h1 class="mb-4 text-3xl font-bold">
       My Portfolio
-      <span class="badge" :class="(store.gain >= 0) ? 'badge-success' : 'badge-danger'">{{ store.gain }} ({{ store.gainPercent || 0 }}%)</span>
+      <span class="badge" :class="(store.gain >= 0) ? 'badge-success' : 'badge-danger'">{{ store.gain }} ({{ store.gainPercent }}%)</span>
       <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
     </h1>
     <div class="mt-4 mb-4">
