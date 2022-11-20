@@ -273,6 +273,10 @@ class OrganizationsController extends Controller
         
         foreach($organizations as $item){
             $item = (array) $item;
+            $price = $item['LTP'];
+            if($price==0){
+                $price = $item['YCP'];
+            }
             Organization::where('account_id',1)->where('code',$item['Scrip'])->update(
                 [
                     'name' => $item['FullName'],
@@ -290,7 +294,7 @@ class OrganizationsController extends Controller
                     'public' => $item['Public'],
                     'eps' => $item['Eps'],
                     'floor_price' => $item['FloorPrice'],
-                    'price' => $item['LTP'],
+                    'price' => $price,
                     'pe' => $item['AuditedPE'],
                     'upe' => $item['UnAuditedPE'],
                     'nav' => $item['NAV'],
