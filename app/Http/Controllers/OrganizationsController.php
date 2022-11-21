@@ -38,27 +38,23 @@ class OrganizationsController extends Controller
         ];
     }
 
-    public function create()
+    public static function getAllFromAmarStock()
     {
-        return Inertia::render('Organizations/Create');
-    }
-
-    public function store()
-    {
-        Auth::user()->account->organizations()->create(
-            Request::validate([
-                'name' => ['required', 'max:100'],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
-        );
-
-        return Redirect::route('organizations')->with('success', 'Organization created.');
+        set_time_limit(0);
+        
+        $ch = curl_init("https://www.amarstock.com/LatestPrice/34267d8d73dd");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $content = curl_exec($ch);
+        curl_close($ch);
+        $organizations = json_decode($content);
+        foreach($organizations as $index => $item){
+            if($item->LTP==0){
+                $organizations[$index]->LTP = $item->YCP;
+            }
+        }
+        
+        return $organizations;
     }
 
     public function show($name)
@@ -70,68 +66,6 @@ class OrganizationsController extends Controller
         curl_close($ch);
         
         return $content;
-    }
-
-    public function showAll()
-    {
-        $ch = curl_init("https://www.amarstock.com/LatestPrice/34267d8d73dd");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        $content = curl_exec($ch);
-        curl_close($ch);
-        
-        return $content;
-    }
-
-    public function edit(Organization $organization)
-    {
-        return Inertia::render('Organizations/Edit', [
-            'organization' => [
-                'id' => $organization->id,
-                'name' => $organization->name,
-                'email' => $organization->email,
-                'phone' => $organization->phone,
-                'address' => $organization->address,
-                'city' => $organization->city,
-                'region' => $organization->region,
-                'country' => $organization->country,
-                'postal_code' => $organization->postal_code,
-                'deleted_at' => $organization->deleted_at,
-                'contacts' => $organization->contacts()->orderByName()->get()->map->only('id', 'name', 'city', 'phone'),
-            ],
-        ]);
-    }
-
-    public function update(Organization $organization)
-    {
-        $organization->update(
-            Request::validate([
-                'name' => ['required', 'max:100'],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
-        );
-
-        return Redirect::back()->with('success', 'Organization updated.');
-    }
-
-    public function destroy(Organization $organization)
-    {
-        $organization->delete();
-
-        return Redirect::back()->with('success', 'Organization deleted.');
-    }
-
-    public function restore(Organization $organization)
-    {
-        $organization->restore();
-
-        return Redirect::back()->with('success', 'Organization restored.');
     }
 
     public function watch($id)
@@ -262,21 +196,10 @@ class OrganizationsController extends Controller
 
     public function syncFromAmarStock()
     {
-        set_time_limit(0);
-        
-        $ch = curl_init("https://www.amarstock.com/LatestPrice/34267d8d73dd");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        $content = curl_exec($ch);
-        curl_close($ch);
-        $organizations = json_decode($content);
+        $organizations = $this->getAllFromAmarStock();
         
         foreach($organizations as $item){
             $item = (array) $item;
-            $price = $item['LTP'];
-            if($price==0){
-                $price = $item['YCP'];
-            }
             Organization::where('account_id',1)->where('code',$item['Scrip'])->update(
                 [
                     'name' => $item['FullName'],
@@ -294,7 +217,7 @@ class OrganizationsController extends Controller
                     'public' => $item['Public'],
                     'eps' => $item['Eps'],
                     'floor_price' => $item['FloorPrice'],
-                    'price' => $price,
+                    'price' => $item['LTP'],
                     'pe' => $item['AuditedPE'],
                     'upe' => $item['UnAuditedPE'],
                     'nav' => $item['NAV'],

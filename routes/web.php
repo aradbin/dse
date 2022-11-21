@@ -93,48 +93,20 @@ Route::get('organizations/all', [OrganizationsController::class, 'all'])
     ->name('organizations.all');
     // ->middleware('guest');
 
-Route::get('organizations/create', [OrganizationsController::class, 'create'])
-    ->name('organizations.create')
-    ->middleware('auth');
-
-Route::post('organizations', [OrganizationsController::class, 'store'])
-    ->name('organizations.store')
-    ->middleware('auth');
-
 Route::get('organizations/show/{code}', [OrganizationsController::class, 'show'])
     ->name('organizations.show');
     // ->middleware('guest');
 
-Route::get('organizations/showAll', [OrganizationsController::class, 'showAll'])
-    ->name('organizations.show');
-    // ->middleware('guest');
-
-Route::get('organizations/{organization}/edit', [OrganizationsController::class, 'edit'])
-    ->name('organizations.edit')
-    ->middleware('auth');
-
-Route::put('organizations/{organization}', [OrganizationsController::class, 'update'])
-    ->name('organizations.update')
-    ->middleware('auth');
-
-Route::delete('organizations/{organization}', [OrganizationsController::class, 'destroy'])
-    ->name('organizations.destroy')
-    ->middleware('auth');
-
-Route::put('organizations/{organization}/restore', [OrganizationsController::class, 'restore'])
-    ->name('organizations.restore')
-    ->middleware('auth');
-
 Route::get('organizations/sync/dse', [OrganizationsController::class, 'syncFromDse'])
-    ->name('organizations.sync')
+    ->name('organizations.sync.dse')
     ->middleware('auth');
 
 Route::get('organizations/sync/amarstock', [OrganizationsController::class, 'syncFromAmarStock'])
-    ->name('organizations.sync')
+    ->name('organizations.sync.amarstock')
     ->middleware('auth');
 
 Route::get('organizations/sync/amarstock/dividend', [OrganizationsController::class, 'syncDividend'])
-    ->name('organizations.sync')
+    ->name('organizations.sync.amarstock.dividend')
     ->middleware('auth');
 
 Route::get('organizations/watch/{id}', [OrganizationsController::class, 'watch'])
