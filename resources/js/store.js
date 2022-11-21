@@ -118,6 +118,12 @@ export const store = reactive({
   updatePortfolio(obj){
     this.portfolio = {};
     this.portfolio = obj;
+    const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
+    if(index >= 0){console.log('if')
+      this.portfolios[index] = obj;
+    }else{console.log('else')
+      this.portfolios.push(obj);
+    }
     this.syncPortfolio();
   },
   updateBrokers(arr){

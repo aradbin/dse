@@ -46,9 +46,6 @@ import { store } from '../../store'
 
 export default {
   emits: ['toggleModal'],
-  props: {
-    
-  },
   data() {
     return {
       store
