@@ -97,12 +97,15 @@ export const store = reactive({
   value: 0,
   gain: 0,
   gainPercent: 0,
+  loadingPortfolios: true,
   getPortfolios(){
+    this.loadingPortfolios = true;
     fetch('/portfolio/all')
       .then(response => response.json())
       .then(data => {
         this.updatePortfolios(data.portfolios);
         this.updateBrokers(data.brokers);
+        this.loadingPortfolios = false;
       });
   },
   updatePortfolios(arr){
@@ -111,12 +114,6 @@ export const store = reactive({
   },
   updatePortfolio(obj){
     this.portfolio = {};
-    const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
-    if(index >= 0){
-      this.portfolios[index] = obj;
-    }else{
-      this.portfolios.push(obj);
-    }
     this.portfolio = obj;
     this.syncPortfolio();
   },
@@ -152,8 +149,13 @@ export const store = reactive({
     this.gain = (totalValue - totalCost).toFixed(2);
     this.gainPercent = (((totalValue - totalCost) / totalCost) * 100).toFixed(2);
     if(isNaN(this.gainPercent)){ this.gainPercent = 0 };
-    if(this.portfolio && Object.keys(this.portfolio).length > 0 && this.portfolios.length > 0){
-      this.portfolio = this.portfolios.find(portfolio => portfolio.id===this.portfolio.id);
+    if(this.portfolio && Object.keys(this.portfolio).length > 0 && !this.loadingOrganizations && !this.loadingPortfolios){
+      let index = this.portfolios.findIndex(portfolio => portfolio.id===this.portfolio.id);
+      if(index >= 0){
+        this.portfolio = this.portfolios[index];
+      }else{
+        this.getPortfolios();
+      }
     }
   }
 });

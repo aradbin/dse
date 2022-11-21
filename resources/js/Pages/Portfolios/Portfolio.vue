@@ -67,12 +67,10 @@
       }
     },
     watch: {
-      'store.portfolios'(){
-        this.updatePortfolio();
-      },
       portfolio: {
         deep: true,
         handler: function () {
+          console.log('props',this.portfolio)
           this.updatePortfolio();
         },
       }
@@ -86,14 +84,12 @@
         this.organization_id = organization_id;
         this.showTransactionModal = !this.showTransactionModal;
       },
-      updatePortfolio: function(){
+      updatePortfolio: function(){console.log('updatePortfolio')
         this.store.updatePortfolio(this.portfolio);
       }
     },
     mounted(){
-      if(this.store.organizations.length > 0 && this.store.portfolios.length > 0){
-        this.updatePortfolio();
-      }
+      this.updatePortfolio();
     }
   }
 </script>
