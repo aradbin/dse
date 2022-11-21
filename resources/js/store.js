@@ -47,6 +47,9 @@ export const store = reactive({
     return null;
   },
   updateQuery(query){
+    if(query.search!==this.query.search || query.se_index!==this.query.se_index || query.category!==this.query.category || query.sector!==this.query.sector){
+      query.current_page = 1;
+    }
     this.query = query;
     this.filterOrganizations(this.query);
     // let url = window.location.origin + window.location.pathname + '?';
