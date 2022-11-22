@@ -134,12 +134,6 @@ export default {
     if(this.store.organizations.length > 0){
       this.store.updateQuery(this.form);
     }
-    // window.setInterval(() => {
-    //   let d = new Date();
-    //   if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
-    //     this.getDetails(true);
-    //   }
-    // }, 60000);
   }
 }
 </script>
