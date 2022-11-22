@@ -8,6 +8,7 @@ use App\Models\Dividend;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // use Spatie\Crawler\Crawler;
@@ -23,13 +24,32 @@ class OrganizationsController extends Controller
 
     public function initial()
     {
-        $query = Organization::where('organizations.account_id',1)->orderBy('organizations.code');
-        if(Auth::user()){
-            $query->with('dividends','isWatchListed');
-        }else{
-            $query->with('dividends');
+        $organizations = [];
+
+        if(Route::currentRouteName()=='organizations'){
+            $query = Organization::where('organizations.account_id',1)->orderBy('organizations.code');
+            if(Auth::user()){
+                $query->with('dividends','isWatchListed');
+            }else{
+                $query->with('dividends');
+            }
+            $organizations = $query->limit(20)->get();
         }
-        $organizations = $query->limit(20)->get();
+
+        if(Route::currentRouteName()=='watchlist'){
+            $watchlists = Auth::user()->watchlists()->get();
+            $watchlist_organizations = [];
+            foreach($watchlists as $watchlist){
+                $watchlist_organizations[] = $watchlist->organization_id;
+            }
+            $query = Organization::whereIn('id',$watchlist_organizations);
+            if(Auth::user()){
+                $query->with('dividends','isWatchListed');
+            }else{
+                $query->with('dividends');
+            }
+            $organizations = $query->get();
+        }
         
         return [
             'organizations' => $organizations,

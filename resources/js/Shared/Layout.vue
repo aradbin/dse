@@ -97,17 +97,24 @@ export default {
   },
   methods: {
     getOrganizations(){
-      fetch('/organizations/initial')
-        .then(response => response.json())
-        .then(data => {
-          this.store.updateOrganizations(data.organizations);
-          this.store.updateSectors(data.sectors);
-          this.store.updateLoadingOrganizations(false);
-          if(this.auth.user){
-            this.store.getPortfolios();
-          }
-          this.getAllOrganizations();
-        })
+      if(window.location.pathname==='/organizations' || window.location.pathname==='/watchlist'){
+        fetch('/organizations/initial')
+          .then(response => response.json())
+          .then(data => {
+            this.store.updateOrganizations(data.organizations);
+            this.store.updateSectors(data.sectors);
+            this.store.updateLoadingOrganizations(false);
+            if(this.auth.user){
+              this.store.getPortfolios();
+            }
+            this.getAllOrganizations();
+          })
+      }else{
+        if(this.auth.user){
+          this.store.getPortfolios();
+        }
+        this.getAllOrganizations();
+      }
     },
     getAllOrganizations(){
       fetch('/organizations/all')
