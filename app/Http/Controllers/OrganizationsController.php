@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
-use App\Http\Controllers\PortfoliosController;
-
 // use Spatie\Crawler\Crawler;
 // use App\Http\Controllers\ObserverController;
 use Symfony\Component\DomCrawler\Crawler;
@@ -25,22 +23,13 @@ class OrganizationsController extends Controller
 
     public function initial()
     {
-        $initial_organizations = [];
-        if(Auth::user()){
-            $initial_organizations = PortfoliosController::getPorfolioOrganizationIds();
-        }
-        $paginatedOrganizations = Organization::where('organizations.account_id',1)
-        ->orderBy('organizations.code')->limit(20)->select('id')->get();
-        foreach($paginatedOrganizations as $org){
-            $initial_organizations[] = $org->id;
-        }
-        $query = Organization::whereIn('id',$initial_organizations);
+        $query = Organization::where('organizations.account_id',1)->orderBy('organizations.code');
         if(Auth::user()){
             $query->with('dividends','isWatchListed');
         }else{
             $query->with('dividends');
         }
-        $organizations = $query->get();
+        $organizations = $query->limit(20)->get();
         
         return [
             'organizations' => $organizations,
@@ -48,20 +37,15 @@ class OrganizationsController extends Controller
         ];
     }
 
-    public function all($status)
+    public function all()
     {
-        if($status=='open'){
-            $organizations = $this->getAllFromAmarStock();
+        $query = Organization::where('organizations.account_id',1)->orderBy('organizations.code');
+        if(Auth::user()){
+            $query->with('dividends','isWatchListed');
         }else{
-            $query = Organization::where('organizations.account_id',1)
-                ->orderBy('organizations.code');
-            if(Auth::user()){
-                $query->with('dividends','isWatchListed');
-            }else{
-                $query->with('dividends');
-            }
-            $organizations = $query->get();
+            $query->with('dividends');
         }
+        $organizations = $query->get();
         
         return [
             'organizations' => $organizations

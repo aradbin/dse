@@ -110,7 +110,7 @@ export default {
         })
     },
     getAllOrganizations(){
-      fetch('/organizations/all/close')
+      fetch('/organizations/all')
         .then(response => response.json())
         .then(data => {
           this.store.updateOrganizations(data.organizations,true);
