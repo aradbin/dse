@@ -119,12 +119,12 @@ export default {
   },
   mounted(){
     this.getOrganizations();
-    // window.setInterval(() => {
-    //   let d = new Date();
-    //   if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
-    //     this.getOrganizations(true);
-    //   }
-    // }, 60000);
+    window.setInterval(() => {
+      let d = new Date();
+      if(d.getDay()<5 && d.getHours()>10 && d.getHours()<15){
+        this.getAllOrganizations();
+      }
+    }, 60000);
   }
 }
 </script>
