@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
+use App\Http\Controllers\PortfoliosController;
+
 // use Spatie\Crawler\Crawler;
 // use App\Http\Controllers\ObserverController;
 use Symfony\Component\DomCrawler\Crawler;
@@ -21,10 +23,18 @@ class OrganizationsController extends Controller
         return Inertia::render('Organizations/Index');
     }
 
-    public function all()
+    public function initial()
     {
-        $query = Organization::where('organizations.account_id',1)
-            ->orderBy('organizations.code');
+        $initial_organizations = [];
+        if(Auth::user()){
+            $initial_organizations = PortfoliosController::getPorfolioOrganizationIds();
+        }
+        $paginatedOrganizations = Organization::where('organizations.account_id',1)
+        ->orderBy('organizations.code')->limit(20)->select('id')->get();
+        foreach($paginatedOrganizations as $org){
+            $initial_organizations[] = $org->id;
+        }
+        $query = Organization::whereIn('id',$initial_organizations);
         if(Auth::user()){
             $query->with('dividends','isWatchListed');
         }else{
@@ -35,6 +45,26 @@ class OrganizationsController extends Controller
         return [
             'organizations' => $organizations,
             'sectors' => Organization::groupBy('sector')->select('sector')->get()
+        ];
+    }
+
+    public function all($status)
+    {
+        if($status=='open'){
+            $organizations = $this->getAllFromAmarStock();
+        }else{
+            $query = Organization::where('organizations.account_id',1)
+                ->orderBy('organizations.code');
+            if(Auth::user()){
+                $query->with('dividends','isWatchListed');
+            }else{
+                $query->with('dividends');
+            }
+            $organizations = $query->get();
+        }
+        
+        return [
+            'organizations' => $organizations
         ];
     }
 

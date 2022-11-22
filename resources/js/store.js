@@ -5,8 +5,11 @@ export const store = reactive({
   organizations: [],
   loadingOrganizations: true,
   sectors: [],
-  updateOrganizations(arr){
+  updateOrganizations(arr,syncPortfolio=false){
     this.organizations = arr;
+    if(syncPortfolio){
+      this.syncPortfolio();
+    }
   },
   updateLoadingOrganizations(bool){
     this.loadingOrganizations = bool;

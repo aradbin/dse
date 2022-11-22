@@ -25,6 +25,18 @@ class PortfoliosController extends Controller
         ];
     }
 
+    public static function getPorfolioOrganizationIds()
+    {
+        $organizations = [];
+        $portfolios = Auth::user()->portfolios()->get();
+        foreach($portfolios as $portfolio){
+            foreach($portfolio->organizations as $org){
+                $organizations[] = $org->organization_id;
+            }
+        }
+        return $organizations;
+    }
+
     public function store(Request $request)
     {
         $portfolio = Auth::user()->portfolios()->create(

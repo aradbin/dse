@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     getOrganizations(){
-      fetch('/organizations/all')
+      fetch('/organizations/initial')
         .then(response => response.json())
         .then(data => {
           this.store.updateOrganizations(data.organizations);
@@ -106,6 +106,14 @@ export default {
           if(this.auth.user){
             this.store.getPortfolios();
           }
+          this.getAllOrganizations();
+        })
+    },
+    getAllOrganizations(){
+      fetch('/organizations/all/close')
+        .then(response => response.json())
+        .then(data => {
+          this.store.updateOrganizations(data.organizations,true);
         })
     }
   },
