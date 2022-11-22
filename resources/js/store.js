@@ -106,9 +106,9 @@ export const store = reactive({
     fetch('/portfolio/all')
       .then(response => response.json())
       .then(data => {
+        this.loadingPortfolios = false;
         this.updatePortfolios(data.portfolios);
         this.updateBrokers(data.brokers);
-        this.loadingPortfolios = false;
       });
   },
   updatePortfolios(arr){
@@ -117,12 +117,12 @@ export const store = reactive({
   },
   updatePortfolio(obj){
     this.portfolio = {};
-    this.portfolio = obj;
-    const index = this.portfolios.findIndex(portfolio => portfolio.id === obj.id);
-    if(index >= 0){console.log('if')
-      this.portfolios[index] = obj;
-    }else{console.log('else')
-      this.portfolios.push(obj);
+    this.portfolio = JSON.parse(JSON.stringify(obj));
+    const index = this.portfolios.findIndex(portfolio => portfolio.id === this.portfolio.id);
+    if(index >= 0){
+      this.portfolios[index] = this.portfolio;
+    }else{
+      this.portfolios.push(this.portfolio);
     }
     this.syncPortfolio();
   },
@@ -145,16 +145,16 @@ export const store = reactive({
           }
         }
       });
-      this.portfolios[i].cost = portfolioCost;
-      this.portfolios[i].value = portfolioValue;
+      this.portfolios[i].cost = portfolioCost.toFixed(2);
+      this.portfolios[i].value = portfolioValue.toFixed(2);
       this.portfolios[i].gain = (portfolioValue - portfolioCost).toFixed(2);
       this.portfolios[i].gainPercent = (((portfolioValue - portfolioCost) / portfolioCost) * 100).toFixed(2);
       if(isNaN(this.portfolios[i].gainPercent)){ this.portfolios[i].gainPercent = 0 };
       totalCost = totalCost + portfolioCost;
       totalValue = totalValue + portfolioValue;
     });
-    this.cost = totalCost;
-    this.value = totalValue;
+    this.cost = totalCost.toFixed(2);
+    this.value = totalValue.toFixed(2);
     this.gain = (totalValue - totalCost).toFixed(2);
     this.gainPercent = (((totalValue - totalCost) / totalCost) * 100).toFixed(2);
     if(isNaN(this.gainPercent)){ this.gainPercent = 0 };

@@ -70,7 +70,6 @@
       portfolio: {
         deep: true,
         handler: function () {
-          console.log('props',this.portfolio)
           this.updatePortfolio();
         },
       }
@@ -84,7 +83,7 @@
         this.organization_id = organization_id;
         this.showTransactionModal = !this.showTransactionModal;
       },
-      updatePortfolio: function(){console.log('updatePortfolio')
+      updatePortfolio: function(){
         this.store.updatePortfolio(this.portfolio);
       }
     },
