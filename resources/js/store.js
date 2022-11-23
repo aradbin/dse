@@ -104,9 +104,9 @@ export const store = reactive({
   gain: 0,
   gainPercent: 0,
   loadingPortfolios: true,
-  getPortfolios(){
+  async getPortfolios(){
     this.loadingPortfolios = true;
-    fetch('/portfolio/all')
+    await fetch('/portfolio/all')
       .then(response => response.json())
       .then(data => {
         this.loadingPortfolios = false;

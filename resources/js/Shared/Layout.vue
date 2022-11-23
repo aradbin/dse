@@ -98,22 +98,32 @@ export default {
   methods: {
     getOrganizations(){
       if(window.location.pathname==='/organizations' || window.location.pathname==='/watchlist'){
-        fetch('/organizations/initial')
+        let pathname = 'organizations';
+        if(window.location.pathname==='/watchlist'){
+          pathname = 'watchlist';
+        }
+        fetch('/organizations/initial/'+pathname)
           .then(response => response.json())
           .then(data => {
             this.store.updateOrganizations(data.organizations);
             this.store.updateSectors(data.sectors);
             this.store.updateLoadingOrganizations(false);
             if(this.auth.user){
-              this.store.getPortfolios();
+              this.store.getPortfolios().then(
+                this.getAllOrganizations()
+              );
+            }else{
+              this.getAllOrganizations();
             }
-            this.getAllOrganizations();
           })
       }else{
         if(this.auth.user){
-          this.store.getPortfolios();
+          this.store.getPortfolios().then(
+            this.getAllOrganizations()
+          );
+        }else{
+          this.getAllOrganizations();
         }
-        this.getAllOrganizations();
       }
     },
     getAllOrganizations(){

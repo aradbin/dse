@@ -89,7 +89,7 @@ Route::get('organizations', [OrganizationsController::class, 'index'])
     ->name('organizations');
     // ->middleware('guest');
 
-Route::get('organizations/initial', [OrganizationsController::class, 'initial'])
+Route::get('organizations/initial/{type}', [OrganizationsController::class, 'initial'])
     ->name('organizations.initial');
     // ->middleware('guest');
 

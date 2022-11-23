@@ -22,11 +22,11 @@ class OrganizationsController extends Controller
         return Inertia::render('Organizations/Index');
     }
 
-    public function initial()
+    public function initial($type)
     {
         $organizations = [];
 
-        if(Route::currentRouteName()=='organizations'){
+        if($type=='organizations'){
             $query = Organization::where('organizations.account_id',1)->orderBy('organizations.code');
             if(Auth::user()){
                 $query->with('dividends','isWatchListed');
@@ -36,13 +36,13 @@ class OrganizationsController extends Controller
             $organizations = $query->limit(20)->get();
         }
 
-        if(Route::currentRouteName()=='watchlist'){
+        if($type=='watchlist'){
             $watchlists = Auth::user()->watchlists()->get();
             $watchlist_organizations = [];
             foreach($watchlists as $watchlist){
                 $watchlist_organizations[] = $watchlist->organization_id;
             }
-            $query = Organization::whereIn('id',$watchlist_organizations);
+            $query = Organization::whereIn('id',$watchlist_organizations)->orderBy('organizations.code');
             if(Auth::user()){
                 $query->with('dividends','isWatchListed');
             }else{
