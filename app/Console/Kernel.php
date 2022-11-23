@@ -15,7 +15,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call('App\Http\Controllers\OrganizationsController@syncFromAmarStock')
+            ->days([0, 1, 2, 3, 4])
+            ->dailyAt('15:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->sendOutputTo(public_path().'/tasks/log.txt');
     }
 
     /**
