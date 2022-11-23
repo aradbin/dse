@@ -7,7 +7,7 @@
       <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
     </h1>
     <div class="mt-4 mb-4">
-      <Portfolios v-if="this.store.portfolios.length > 0" :portfolios="this.store.portfolios" />
+      <Portfolios v-if="this.store.portfolios.length > 0" />
     </div>
   </div>
 

@@ -12,7 +12,7 @@
         <th class="pb-4 pt-6 px-6">Unrealized Gain (%)</th>
         <th class="pb-4 pt-6 px-6">Actions</th>
       </tr>
-      <tr v-for="item in portfolios" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+      <tr v-for="item in store.portfolios" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
         <td class="border-t px-6 py-4">{{ item.name }}</td>
         <td class="border-t px-6 py-4">{{ item.bo_account }}</td>
         <td class="border-t px-6 py-4">{{ item.broker_id }}</td>
@@ -24,8 +24,8 @@
         </td>
         <td class="border-t px-6 py-4"><Link class="btn-indigo px-4 py-2" :href="'/portfolio/'+item.id">Details</Link></td>
       </tr>
-      <tr v-if="portfolios?.length === 0">
-        <td class="border-t px-6 py-4 text-center" colspan="3">No portfolios found</td>
+      <tr v-if="store.portfolios?.length === 0">
+        <td class="border-t px-6 py-4 text-center" colspan="3">No portfolio found</td>
       </tr>
     </table>
   </div>
@@ -33,13 +33,16 @@
 
 <script>
 import { Link } from '@inertiajs/inertia-vue3'
+import { store } from '../../store'
 
 export default {
   components: {
     Link,
   },
-  props: {
-      portfolios: Array
-  }
+  data() {
+    return {
+      store
+    }
+  },
 }
 </script>

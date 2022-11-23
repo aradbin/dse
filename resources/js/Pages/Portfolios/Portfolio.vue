@@ -27,7 +27,7 @@
       <Organizations @toggleModal="toggleTransactionModal" />
     </div>
     <div class="mt-8 mb-4">
-      <Transactions :transactions="store.portfolio?.transactions" @toggleModal="toggleTransactionModal" />
+      <Transactions @toggleModal="toggleTransactionModal" />
     </div>
   </div>
 

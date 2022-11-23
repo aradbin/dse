@@ -15,7 +15,7 @@
         <th class="pb-4 pt-6 px-6">Commission</th>
         <th class="pb-4 pt-6 px-6">Remarks</th>
       </tr>
-      <tr v-for="item in transactions" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+      <tr v-for="item in store.portfolio?.transactions" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
         <td class="border-t px-6 py-4">{{ getDate(item.created_at) }}</td>
         <td class="border-t px-6 py-4">{{ getTransactionType(item.type) }}</td>
         <td class="border-t px-6 py-4">{{ item.amount }}</td>
@@ -25,7 +25,7 @@
         <td class="border-t px-6 py-4">{{ item.name || 'N/A' }}</td>
         
       </tr>
-      <tr v-if="transactions?.length === 0">
+      <tr v-if="store.portfolio?.transactions?.length === 0">
         <td class="border-t px-6 py-4 text-center" colspan="3">No transactions found</td>
       </tr>
     </table>
@@ -35,11 +35,14 @@
 <script>
 import getTransactionTypeString from "../../Helpers/string";
 import getDateString from "../../Helpers/date";
+import { store } from '../../store'
 
 export default {
   emits: ['toggleModal'],
-  props: {
-      transactions: Array
+  data() {
+    return {
+      store
+    }
   },
   methods: {
     getTransactionType(type){
