@@ -20,7 +20,7 @@
         <td class="border-t px-6 py-4">{{ org.organization.code }}</td>
         <td class="border-t px-6 py-4">{{ org.quantity }}</td>
         <td class="border-t px-6 py-4">{{ org.amount }}</td>
-        <td class="border-t px-6 py-4">{{ org.amount * org.quantity }}</td>
+        <td class="border-t px-6 py-4">{{ (org.amount * org.quantity).toFixed(2) }}</td>
         <td class="border-t px-6 py-4">{{ org.organization.price || 0 }}</td>
         <td class="border-t px-6 py-4">{{ org.organization.price ? (org.organization.price * org.quantity) : 0 }}</td>
         <td class="border-t px-6 py-4">

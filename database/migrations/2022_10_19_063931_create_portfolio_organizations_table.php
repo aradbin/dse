@@ -19,8 +19,8 @@ class CreatePortfolioOrganizationsTable extends Migration
             $table->foreign('portfolio_id')->references('id')->on('portfolios');
             $table->integer('organization_id')->unsigned()->nullable();
             $table->foreign('organization_id')->references('id')->on('organizations');
-            $table->float('amount')->default(0);
-            $table->float('quantity')->default(1);
+            $table->float('amount')->unsigned()->default(0);
+            $table->float('quantity')->unsigned()->default(1);
             $table->timestamps();
             $table->softDeletes();
         });
