@@ -52,8 +52,9 @@ class PortfoliosController extends Controller
             ]);
         }
 
+        $portfolio->deposit = $initial_deposit;
         $portfolio->balance = $initial_deposit - 450;
-        $portfolio->paid_charge = 450;   
+        $portfolio->paid_charge = 450;
         $portfolio->save();
 
         return Redirect::route('portfolio.show',$portfolio->id)->with('success', 'Portfolio created');
