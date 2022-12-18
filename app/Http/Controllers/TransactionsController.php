@@ -27,6 +27,8 @@ class TransactionsController extends Controller
             ]);
             
             $balanceAdjustment = 0;
+            $deposit = 0;
+            $withdraw = 0;
             $gainAdjustment = 0;
             $commission = 0;
             $charge = 0;
@@ -36,8 +38,10 @@ class TransactionsController extends Controller
 
             if(Request::get('type')==1){ // Deposit
                 $balanceAdjustment = Request::get('amount');
+                $deposit = Request::get('amount');
             }else if(Request::get('type')==2){ // Withdraw
                 $balanceAdjustment = 0 - Request::get('amount');
+                $withdraw = Request::get('amount');
             }else if(Request::get('type')==3){ // Buy
                 $commission = $cost * ($portfolio->commission / 100);
                 Request::validate([
@@ -69,7 +73,7 @@ class TransactionsController extends Controller
                 ]);
                 $commission = $cost * ($portfolio->commission / 100);
                 $balanceAdjustment = $cost - $commission;
-                $gainAdjustment = $cost - $commission - ($organization->amount * $organization->quantity);
+                $gainAdjustment = ($cost - $commission) - ($organization->amount * Request::get('quantity'));
                 $organization->quantity = $organization->quantity - Request::get('quantity');
                 if($organization->quantity==0){
                     $organization->delete();
@@ -99,12 +103,14 @@ class TransactionsController extends Controller
                 'tax' => $tax,
             ]);
 
+            $portfolio->deposit = $portfolio->deposit + $deposit;
+            $portfolio->withdraw = $portfolio->withdraw + $withdraw;
             $portfolio->balance = $portfolio->balance + $balanceAdjustment;
-            $portfolio->realized_gain = $portfolio->realized_gain + $gainAdjustment;
             $portfolio->paid_commission = $portfolio->paid_commission + $commission;
             $portfolio->paid_charge = $portfolio->paid_charge + $charge;
-            $portfolio->cash_dividend = $portfolio->cash_dividend + $dividend;
             $portfolio->paid_tax = $portfolio->paid_tax + $tax;
+            $portfolio->realized_gain = $portfolio->realized_gain + $gainAdjustment;
+            $portfolio->cash_dividend = $portfolio->cash_dividend + $dividend;
             $portfolio->save();
 
             return Redirect::back()->with('success', 'Transaction created');
