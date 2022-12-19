@@ -27,6 +27,8 @@ class CreatePortfoliosTable extends Migration
             $table->double('deposit')->unsigned()->default(0);
             $table->double('withdraw')->unsigned()->default(0);
             $table->double('balance')->default(0);
+            $table->double('buy')->unsigned()->default(0);
+            $table->double('sell')->unsigned()->default(0);
             $table->double('paid_commission')->unsigned()->default(0);
             $table->double('paid_charge')->unsigned()->default(0);
             $table->double('paid_tax')->unsigned()->default(0);
