@@ -29,6 +29,8 @@ class TransactionsController extends Controller
             $balanceAdjustment = 0;
             $deposit = 0;
             $withdraw = 0;
+            $buy = 0;
+            $sell = 0;
             $gainAdjustment = 0;
             $commission = 0;
             $charge = 0;
@@ -50,6 +52,7 @@ class TransactionsController extends Controller
                     'amount.max' => 'Insufficient balance'
                 ]);
                 $balanceAdjustment = 0 - ($cost + $commission);
+                $buy = $cost + $commission;
                 $organization = $portfolio->organizations()->where('organization_id',Request::get('organization_id'))->first();
                 if($organization){
                     $organization->amount = (($organization->amount * $organization->quantity) + $cost) / ($organization->quantity + Request::get('quantity'));
@@ -73,6 +76,7 @@ class TransactionsController extends Controller
                 ]);
                 $commission = $cost * ($portfolio->commission / 100);
                 $balanceAdjustment = $cost - $commission;
+                $sell = $cost - $commission;
                 $gainAdjustment = ($cost - $commission) - ($organization->amount * Request::get('quantity'));
                 $organization->quantity = $organization->quantity - Request::get('quantity');
                 if($organization->quantity==0){
@@ -106,6 +110,8 @@ class TransactionsController extends Controller
             $portfolio->deposit = $portfolio->deposit + $deposit;
             $portfolio->withdraw = $portfolio->withdraw + $withdraw;
             $portfolio->balance = $portfolio->balance + $balanceAdjustment;
+            $portfolio->buy = $portfolio->buy + $buy;
+            $portfolio->sell = $portfolio->sell + $sell;
             $portfolio->paid_commission = $portfolio->paid_commission + $commission;
             $portfolio->paid_charge = $portfolio->paid_charge + $charge;
             $portfolio->paid_tax = $portfolio->paid_tax + $tax;
