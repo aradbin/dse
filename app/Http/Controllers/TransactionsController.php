@@ -52,7 +52,7 @@ class TransactionsController extends Controller
                     'amount.max' => 'Insufficient balance'
                 ]);
                 $balanceAdjustment = 0 - ($cost + $commission);
-                $buy = $cost + $commission;
+                $buy = $cost;
                 $organization = $portfolio->organizations()->where('organization_id',Request::get('organization_id'))->first();
                 if($organization){
                     $organization->amount = (($organization->amount * $organization->quantity) + $cost) / ($organization->quantity + Request::get('quantity'));
@@ -76,7 +76,7 @@ class TransactionsController extends Controller
                 ]);
                 $commission = $cost * ($portfolio->commission / 100);
                 $balanceAdjustment = $cost - $commission;
-                $sell = $cost - $commission;
+                $sell = $cost;
                 $gainAdjustment = ($cost - $commission) - ($organization->amount * Request::get('quantity'));
                 $organization->quantity = $organization->quantity - Request::get('quantity');
                 if($organization->quantity==0){
