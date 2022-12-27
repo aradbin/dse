@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-white rounded-md shadow grid grid-cols-2">
-    <div class="text-center px-6 py-4 font-bold text-white border border-solid bg-indigo-800 col-span-2">
-      <span class="float-left cursor-pointer" v-on:click="watchList()"><i class="fa-solid fa-heart" :class="organization.is_watch_listed && 'text-yellow-400'"></i></span>
+  <div class="bg-white rounded-md shadow grid grid-cols-2 xl:grid-cols-10">
+    <div class="text-center px-6 xl:px-4 py-4 xl:py-6 font-bold text-white border border-solid bg-indigo-800 col-span-2 xl:col-span-1">
+      <span class="float-left cursor-pointer xl:hidden" v-on:click="watchList()"><i class="fa-solid fa-heart" :class="organization.is_watch_listed && 'text-yellow-400'"></i></span>
       {{ organization.code }}
-      <span class="float-right cursor-pointer" v-on:click="toggleModal()"><i class="fa-solid fa-circle-info"></i></span>
+      <span class="float-right cursor-pointer xl:hidden" v-on:click="toggleModal()"><i class="fa-solid fa-circle-info"></i></span>
     </div>
     <div class="px-3 py-2 font-bold text-white border border-solid" :class="((organization.nav / organization.price)<1.5 && organization.pe<15 && organization.upe<15 && (organization.pe * (organization.nav / organization.price))<22.5 && (organization.upe * (organization.nav / organization.price))<22.5 && organization.div>0) ? (organization.pe>10 || organization.upe>10 || organization.div<5 ? 'bg-orange-600' : 'bg-green-600') : 'bg-red-600'">
       <span class="block text-center text-xs">Price</span>
@@ -36,6 +36,10 @@
     <div class="px-3 py-2 font-bold text-white border border-solid" :class="organization.avg_dividend>0 ? (organization.avg_dividend>5 ? 'bg-green-600' : 'bg-orange-600') : 'bg-red-600'">
       <span class="block text-center text-xs">Avg Cash Dividend</span>
       <h4 class="text-center text-2xl">{{ organization.avg_dividend }} %</h4>
+    </div>
+    <div class="px-6 py-6 font-bold text-white border border-solid bg-indigo-800 text-center hidden xl:grid grid-cols-2">
+      <span class="cursor-pointer" v-on:click="watchList()"><i class="fa-solid fa-heart" :class="organization.is_watch_listed && 'text-yellow-400'"></i></span>
+      <span class="cursor-pointer" v-on:click="toggleModal()"><i class="fa-solid fa-circle-info"></i></span>
     </div>
   </div>
 
