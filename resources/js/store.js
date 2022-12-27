@@ -150,6 +150,7 @@ export const store = reactive({
       });
       this.portfolios[i].cost = portfolioCost.toFixed(2);
       this.portfolios[i].value = portfolioValue.toFixed(2);
+      this.portfolios[i].expense = (portfolio.paid_commission + portfolio.paid_charge + portfolio.paid_tax).toFixed(2);
       this.portfolios[i].gain = (portfolioValue - portfolioCost).toFixed(2);
       this.portfolios[i].gainPercent = (((portfolioValue - portfolioCost) / portfolioCost) * 100).toFixed(2);
       if(isNaN(this.portfolios[i].gainPercent)){ this.portfolios[i].gainPercent = 0 };
