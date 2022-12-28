@@ -8,7 +8,7 @@
       </div>
       <button class="btn-indigo btn-sm" v-on:click="toggleModal()">Add New Portfolio</button>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-8 mb-8">
+    <div v-if="this.store.portfolios.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-8 mb-8">
       <div class="text-center px-6 py-4 font-bold border border-solid bg-white">
         <span class="block text-center text-xs">Portfolio Value</span>
         <div class="text-center mb-4 flex items-center justify-center" :class="(store.gain >= 0) ? 'text-green-600' : 'text-red-600'">
