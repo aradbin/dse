@@ -1,48 +1,64 @@
 <template>
   <div>
     <Head title="Portfolio" />
-    <h1 class="mb-4 text-3xl font-bold">
-      {{ store.portfolio?.name }}
-      <button class="btn-indigo float-right" v-on:click="toggleModal()">Add New Portfolio</button>
-    </h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 shadow">
-      <div class="text-center px-6 py-3 font-bold text-white border border-solid bg-indigo-800">
+    <div class="mb-4 flex justify-between flex-col md:flex-row">
+      <div class="flex items-center mb-3 md:mb-0">
+        <span class="text-3xl font-bold mr-2">{{ store.portfolio?.name }}</span>
+        <span class="badge" :class="(store.portfolio?.profit >= 0) ? 'badge-success' : 'badge-danger'">{{ store.portfolio?.profit }} <span v-if="isFinite(store.portfolio?.profitPercent)">({{ store.portfolio?.profitPercent }}%)</span></span>
+      </div>
+      <!-- <button class="btn-indigo btn-sm" v-on:click="toggleModal()">Add New Portfolio</button> -->
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-8 mb-8">
+      <div class="text-center px-6 py-4 font-bold border border-solid bg-white">
         <span class="block text-center text-xs">Portfolio Value</span>
-        <h6 class="text-center text-2xl mb-4">{{ store.portfolio?.value || 0 }}</h6>
-        <div class="grid grid-cols-2 gap-4">
-          <span class="block text-left text-s">Available Balance</span>
-          <span class="block text-right text-s">{{ store.portfolio?.balance }}</span>
-          <span class="block text-left text-s">Total Deposit</span>
-          <span class="block text-right text-s">{{ store.portfolio?.deposit }}</span>
-          <span class="block text-left text-s">Total Withdraw</span>
-          <span class="block text-right text-s">{{ store.portfolio?.withdraw }}</span>
+        <div class="text-center mb-4 flex items-center justify-center" :class="(store.portfolio?.gain >= 0) ? 'text-green-600' : 'text-red-600'">
+          <span class="text-2xl mr-2">{{ store.portfolio?.value || 0 }}</span>
+          <span class="badge" :class="(store.portfolio?.gain >= 0) ? 'badge-success' : 'badge-danger'">{{ store.portfolio?.gain }} ({{ store.portfolio?.gainPercent }}%)</span>
+        </div>
+        <div class="grid grid-cols-3 gap-y-4">
+          <span class="block text-left col-span-2 text-sm">Available Balance</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.balance }}</span>
+          <span class="block text-left col-span-2 text-sm">Total Deposit</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.deposit }}</span>
+          <span class="block text-left col-span-2 text-sm">Total Withdraw</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.withdraw }}</span>
         </div>
       </div>
-      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+      <div class="text-center px-6 py-4 font-bold border border-solid bg-white">
         <span class="block text-center text-xs">Total Expense</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.expense || 0 }}</h6>
-        <span class="block text-center text-xs">Total Commission Paid</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.paid_commission }}</h6>
-        <span class="block text-center text-xs">Total Charge Paid</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.paid_charge }}</h6>
-        <span class="block text-center text-xs">Total Tax Paid</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.paid_tax }}</h6>
+        <h6 class="text-center text-2xl mb-4">{{ store.portfolio?.expense || 0 }}</h6>
+        <div class="grid grid-cols-3 gap-y-4">
+          <span class="block text-left col-span-2 text-sm">Total Commission Paid</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.paid_commission }}</span>
+          <span class="block text-left col-span-2 text-sm">Total Charge Paid</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.paid_charge }}</span>
+          <span class="block text-left col-span-2 text-sm">Total Tax Paid</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.paid_tax }}</span>
+        </div>
       </div>
-      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
+      <div class="text-center px-6 py-4 font-bold border border-solid bg-white">
         <span class="block text-center text-xs">Total Income</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.income || 0 }}</h6>
-        <span class="block text-center text-xs">Realized Gain</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.realized_gain }}</h6>
-        <span class="block text-center text-xs">Total Cash Dividend</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.cash_dividend }}</h6>
-        <span class="block text-center text-xs">Unrealized Gain (%)</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.gain || 0 }} ({{ store.portfolio?.gainPercent }}%)</h6>
+        <h6 class="text-center text-2xl mb-4">{{ store.portfolio?.income || 0 }}</h6>
+        <div class="grid grid-cols-3 gap-y-4">
+          <span class="block text-left col-span-2 text-sm">Realized Gain</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.realized_gain }}</span>
+          <span class="block text-left col-span-2 text-sm">Total Cash Dividend</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.cash_dividend }}</span>
+          <span class="block text-left col-span-2 text-sm">Unrealized Gain</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.gain || 0 }}</span>
+        </div>
       </div>
-      <div class="text-center px-3 py-2 font-bold text-white border border-solid bg-indigo-800">
-        <span class="block text-center text-xs">Total Profit</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.profit || 0 }}</h6>
-        <span class="block text-center text-xs">Total Invested</span>
-        <h6 class="text-center text-2xl">{{ store.portfolio?.buy }}</h6>
+      <div class="text-center px-6 py-4 font-bold border border-solid bg-white">
+        <span class="block text-center text-xs">Total Profit (%)</span>
+        <h6 class="text-center text-2xl mb-4" :class="(store.portfolio?.profit >= 0) ? 'text-green-600' : 'text-red-600'">{{ store.portfolio?.profit || 0 }} <span v-if="isFinite(store.portfolio?.profitPercent)">({{ store.portfolio?.profitPercent }}%)</span></h6>
+        <div class="grid grid-cols-3 gap-y-4">
+          <span class="block text-left col-span-2 text-sm">Total Invested</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.buy }}</span>
+          <span class="block text-left col-span-2 text-sm">Total Income</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.income || 0 }}</span>
+          <span class="block text-left col-span-2 text-sm">Total Expense</span>
+          <span class="block text-right col-span-1 text-sm">{{ store.portfolio?.expense || 0 }}</span>
+        </div>
       </div>
     </div>
     <div class="mt-4 mb-4">

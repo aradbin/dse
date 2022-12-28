@@ -103,6 +103,18 @@ export const store = reactive({
   value: 0,
   gain: 0,
   gainPercent: 0,
+  balance: 0,
+  deposit: 0,
+  withdraw: 0,
+  expense: 0,
+  paid_commission: 0,
+  paid_charge: 0,
+  paid_tax: 0,
+  income: 0,
+  realized_gain: 0,
+  cash_dividend: 0,
+  profit: 0,
+  buy: 0,
   loadingPortfolios: true,
   async getPortfolios(){
     this.loadingPortfolios = true;
@@ -135,9 +147,26 @@ export const store = reactive({
   syncPortfolio(){
     let totalCost = 0;
     let totalValue = 0;
+    let totalGain = 0;
+    let totalExpense = 0;
+    let totalIncome = 0;
+    let totalProfit = 0;
+    let totalBuy = 0;
+    let totalBalance = 0;
+    let totalDeposit = 0;
+    let totalWithdraw = 0;
+    let totalPaidCommission = 0;
+    let totalPaidCharge = 0;
+    let totalPaidTax = 0;
+    let totalRealizedGain = 0;
+    let totalCashDividend = 0;
     this.portfolios.map((portfolio,i) => {
       let portfolioCost = 0;
       let portfolioValue = 0;
+      let portfolioGain = 0;
+      let portfolioExpense = 0;
+      let portfolioIncome = 0;
+      let portfolioProfit = 0;
       portfolio.organizations.map((portfolioOrganization,j) => {
         const organization = this.organizations.find(org => org.code === portfolioOrganization.organization.code);
         if(organization){
@@ -148,20 +177,59 @@ export const store = reactive({
           }
         }
       });
+      portfolioGain = portfolioValue - portfolioCost;
+      portfolioExpense = portfolio.paid_commission + portfolio.paid_charge + portfolio.paid_tax;
+      portfolioIncome = portfolio.realized_gain + portfolio.cash_dividend + portfolioGain;
+      portfolioProfit = portfolioIncome - portfolioExpense;
+
       this.portfolios[i].cost = portfolioCost.toFixed(2);
       this.portfolios[i].value = portfolioValue.toFixed(2);
-      this.portfolios[i].expense = (portfolio.paid_commission + portfolio.paid_charge + portfolio.paid_tax).toFixed(2);
-      this.portfolios[i].gain = (portfolioValue - portfolioCost).toFixed(2);
-      this.portfolios[i].gainPercent = (((portfolioValue - portfolioCost) / portfolioCost) * 100).toFixed(2);
+      this.portfolios[i].gain = portfolioGain.toFixed(2);
+      this.portfolios[i].gainPercent = ((portfolioGain / portfolioCost) * 100).toFixed(2);
       if(isNaN(this.portfolios[i].gainPercent)){ this.portfolios[i].gainPercent = 0 };
+      this.portfolios[i].expense = portfolioExpense.toFixed(2);
+      this.portfolios[i].income = portfolioIncome.toFixed(2);
+      this.portfolios[i].profit = portfolioProfit.toFixed(2);
+      this.portfolios[i].profitPercent = ((portfolioProfit / portfolio.buy) * 100).toFixed(2);
+      if(isNaN(this.portfolios[i].profitPercent)){ this.portfolios[i].profitPercent = 0 };
+      
       totalCost = totalCost + portfolioCost;
       totalValue = totalValue + portfolioValue;
+      totalGain = totalGain + portfolioGain;
+      totalExpense = totalExpense + portfolioExpense;
+      totalIncome = totalIncome + portfolioIncome;
+      totalProfit = totalProfit + portfolioProfit;
+      totalBuy = totalBuy + portfolio.buy;
+      totalBalance = totalBalance + portfolio.balance;
+      totalDeposit = totalDeposit + portfolio.deposit;
+      totalWithdraw = totalWithdraw + portfolio.withdraw;
+      totalPaidCommission = totalPaidCommission + portfolio.paid_commission;
+      totalPaidCharge = totalPaidCharge + portfolio.paid_charge;
+      totalPaidTax = totalPaidTax + portfolio.paid_tax;
+      totalRealizedGain = totalRealizedGain + portfolio.realized_gain;
+      totalCashDividend = totalCashDividend + portfolio.cash_dividend;
     });
+
     this.cost = totalCost.toFixed(2);
     this.value = totalValue.toFixed(2);
     this.gain = (totalValue - totalCost).toFixed(2);
     this.gainPercent = (((totalValue - totalCost) / totalCost) * 100).toFixed(2);
     if(isNaN(this.gainPercent)){ this.gainPercent = 0 };
+    this.expense = totalExpense.toFixed(2);
+    this.income = totalIncome.toFixed(2);
+    this.profit = totalProfit.toFixed(2);
+    this.profitPercent = ((totalProfit / totalBuy) * 100).toFixed(2);
+    if(isNaN(this.profitPercent)){ this.profitPercent = 0 };
+    this.balance = totalBalance;
+    this.deposit = totalDeposit;
+    this.withdraw = totalWithdraw;
+    this.paid_commission = totalPaidCommission;
+    this.paid_charge = totalPaidCharge;
+    this.paid_tax = totalPaidTax;
+    this.realized_gain = totalRealizedGain;
+    this.cash_dividend = totalCashDividend;
+    this.buy = totalBuy;
+    
     if(this.portfolio && Object.keys(this.portfolio).length > 0 && !this.loadingOrganizations && !this.loadingPortfolios){
       let index = this.portfolios.findIndex(portfolio => portfolio.id===this.portfolio.id);
       if(index >= 0){
