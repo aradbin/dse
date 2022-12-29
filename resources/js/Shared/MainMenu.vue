@@ -12,7 +12,7 @@
         <div class="font-semibold" :class="isUrl('watchlist') ? 'text-indigo-600' : 'text-gray-700 group-hover:text-indigo-600 focus:text-indigo-600'">My Watchlist</div>
       </Link>
     </div>
-    <div class="mr-5">
+    <div class="mr-0">
       <Link class="group flex items-center" href="/portfolio">
         <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('portfolio') ? 'fill-indigo-600' : 'fill-gray-700 group-hover:fill-indigo-600'" />
         <div class="font-semibold" :class="isUrl('portfolio') ? 'text-indigo-600' : 'text-gray-700 group-hover:text-indigo-600 focus:text-indigo-600'">My Portfolio</div>

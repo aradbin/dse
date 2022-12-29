@@ -1,7 +1,7 @@
 <template>
   <div>
     <Head title="Organizations" />
-    <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('organizations')">Organizations</h1>
+    <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('organizations') || isUrl('')">Organizations</h1>
     <h1 class="mb-8 text-3xl font-bold" v-if="isUrl('watchlist')">My Watchlist</h1>
     <div class="flex items-end justify-between mb-6">
       <search-filter v-model="form.search" class="w-full" @reset="reset">

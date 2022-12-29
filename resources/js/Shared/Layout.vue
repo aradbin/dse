@@ -18,11 +18,45 @@
                 </div>
               </template>
             </dropdown> -->
+            <dropdown class="md:hidden" placement="bottom-end" v-if="auth.user">
+              <template #default>
+                <div class="group flex items-center cursor-pointer select-none">
+                  <div class="mr-1 text-white whitespace-nowrap">
+                    <span>{{ auth.user.first_name }}</span>
+                    <span class="hidden md:inline">&nbsp;{{ auth.user.last_name }}</span>
+                  </div>
+                  <icon class="w-5 h-5 fill-white" name="cheveron-down" />
+                </div>
+              </template>
+              <template #dropdown>
+                <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-600" :href="`/users/${auth.user.id}/edit`">My Profile</Link>
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-600" href="/watchlist">My WatchList</Link>
+                  <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-indigo-600" href="/logout" method="delete" as="button">Logout</Link>
+                </div>
+              </template>
+            </dropdown>
+            <dropdown class="md:hidden" placement="bottom-end" v-else>
+              <template #default>
+                <div class="group flex items-center cursor-pointer select-none">
+                  <div class="mr-1 text-white whitespace-nowrap">
+                    <span>Account</span>
+                  </div>
+                  <icon class="w-5 h-5 fill-white" name="cheveron-down" />
+                </div>
+              </template>
+              <template #dropdown>
+                <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-600" href="/login">Login</Link>
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-600" href="/register">Register</Link>
+                </div>
+              </template>
+            </dropdown>
           </div>
-          <div class="md:text-md flex items-center justify-between px-6 py-4 w-full text-sm bg-white border-b md:px-12 md:py-0">
+          <div class="md:text-md flex items-center justify-center md:justify-between px-3 md:px-6 py-4 w-full text-sm bg-white border-b md:px-12 md:py-0">
             <!-- <div class="mr-4 mt-1">Value Investor BD</div> -->
             <main-menu class="flex p-0 bg-white overflow-y-auto" />
-            <dropdown placement="bottom-end" v-if="auth.user">
+            <dropdown class="hidden md:block" placement="bottom-end" v-if="auth.user">
               <template #default>
                 <div class="group flex items-center cursor-pointer select-none">
                   <div class="mr-1 text-gray-700 group-hover:text-indigo-600 focus:text-indigo-600 whitespace-nowrap">
@@ -40,7 +74,7 @@
                 </div>
               </template>
             </dropdown>
-            <dropdown placement="bottom-end" v-else>
+            <dropdown class="hidden md:block" placement="bottom-end" v-else>
               <template #default>
                 <div class="group flex items-center cursor-pointer select-none">
                   <div class="mr-1 text-gray-700 group-hover:text-indigo-600 focus:text-indigo-600 whitespace-nowrap">

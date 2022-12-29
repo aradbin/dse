@@ -25,6 +25,7 @@ class DashboardController extends Controller
         //     return redirect('/users/watchlist');
         // }
 
-        return Inertia::render('Dashboard/Home');
+        // return Inertia::render('Dashboard/Home');
+        return Inertia::render('Organizations/Index');
     }
 }
