@@ -182,14 +182,14 @@ export const store = reactive({
       portfolioIncome = portfolio.realized_gain + portfolio.cash_dividend + portfolioGain;
       portfolioProfit = portfolioIncome - portfolioExpense;
 
-      this.portfolios[i].cost = portfolioCost.toFixed(2);
-      this.portfolios[i].value = portfolioValue.toFixed(2);
-      this.portfolios[i].gain = portfolioGain.toFixed(2);
+      this.portfolios[i].cost = portfolioCost;
+      this.portfolios[i].value = portfolioValue;
+      this.portfolios[i].gain = portfolioGain;
       this.portfolios[i].gainPercent = ((portfolioGain / portfolioCost) * 100).toFixed(2);
       if(isNaN(this.portfolios[i].gainPercent)){ this.portfolios[i].gainPercent = 0 };
-      this.portfolios[i].expense = portfolioExpense.toFixed(2);
-      this.portfolios[i].income = portfolioIncome.toFixed(2);
-      this.portfolios[i].profit = portfolioProfit.toFixed(2);
+      this.portfolios[i].expense = portfolioExpense;
+      this.portfolios[i].income = portfolioIncome;
+      this.portfolios[i].profit = portfolioProfit;
       this.portfolios[i].profitPercent = ((portfolioProfit / portfolio.buy) * 100).toFixed(2);
       if(isNaN(this.portfolios[i].profitPercent)){ this.portfolios[i].profitPercent = 0 };
       
@@ -210,14 +210,14 @@ export const store = reactive({
       totalCashDividend = totalCashDividend + portfolio.cash_dividend;
     });
 
-    this.cost = totalCost.toFixed(2);
-    this.value = totalValue.toFixed(2);
-    this.gain = (totalValue - totalCost).toFixed(2);
+    this.cost = totalCost;
+    this.value = totalValue;
+    this.gain = (totalValue - totalCost);
     this.gainPercent = (((totalValue - totalCost) / totalCost) * 100).toFixed(2);
     if(isNaN(this.gainPercent)){ this.gainPercent = 0 };
-    this.expense = totalExpense.toFixed(2);
-    this.income = totalIncome.toFixed(2);
-    this.profit = totalProfit.toFixed(2);
+    this.expense = totalExpense;
+    this.income = totalIncome;
+    this.profit = totalProfit;
     this.profitPercent = ((totalProfit / totalBuy) * 100).toFixed(2);
     if(isNaN(this.profitPercent)){ this.profitPercent = 0 };
     this.balance = totalBalance;
@@ -238,5 +238,9 @@ export const store = reactive({
         this.getPortfolios();
       }
     }
+  },
+  
+  formatCurrency(num){
+    return num.toLocaleString('en-IN', { minimumFractionDigits: 2 });
   }
 });
